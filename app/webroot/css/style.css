@@ -1,0 +1,11 @@
+.cake-error{
+    color:white;
+}
+
+.cake-error a{
+    color: red;
+}
+
+pre.stack-trace {
+    color: white;
+}
