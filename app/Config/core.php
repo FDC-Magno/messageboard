@@ -279,6 +279,7 @@
  * any date & time related errors.
  */
 	date_default_timezone_set('Asia/Manila');
+	Configure::write('debug', 1);
 
 /**
  * `Config.timezone` is available in which you can set users' timezone string.

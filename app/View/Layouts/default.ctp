@@ -96,7 +96,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
                     <li class="nav-item mt-lg-8 d-none d-lg-block">
                         <a class="nav-link position-relative p-0 py-2" data-toggle="tab" href="#tab-content-user" title="User" role="tab">
                             <div class="avatar avatar-sm avatar-online mx-auto">
-                                <img class="avatar-img" src="/img/no-photo.png" alt="">
+                                <img class="avatar-img" src="/files/profiles/<?php echo AuthComponent::user('User')['image'] ?>" alt="">
                             </div>
                         </a>
                     </li>
@@ -191,7 +191,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
                                                         <div class="media">
                                                             
                                                             <div class="avatar avatar-online mr-5">
-                                                                <img class="avatar-img" src="/img/no-photo.png" alt="Anna Bridges">
+                                                                <img class="avatar-img" src="/files/profiles/<?php echo AuthComponent::user('User')['image'] ?>" alt="Anna Bridges">
                                                             </div>
                                                             
                                                             
@@ -233,11 +233,6 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
                             </div>
 
                         </div>
-
-
-
-
-
                     </div>
 
                     <div class="tab-pane fade h-100" id="tab-content-friends" role="tabpanel">
@@ -247,7 +242,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
                                 <div class="container-fluid py-6">
 
                                     <!-- Title -->
-                                    <h2 class="font-bold mb-6">Friends</h2>
+                                    <h2 class="font-bold mb-6">User List</h2>
                                     <!-- Title -->
 
                                     <!-- Search -->
@@ -263,12 +258,6 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
                                     </form>
                                     <!-- Search -->
 
-                                    <!-- Button -->
-                                    <button type="button" class="btn btn-block btn-secondary d-flex align-items-center mb-6" data-toggle="modal" data-target="#invite-friends">
-                                        Invite friends
-                                        <i class="fe-users ml-auto"></i>
-                                    </button>
-
                                     <!-- Friends -->
                                     <nav class="mb-n6">
 
@@ -283,7 +272,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
                                                 <div class="media">
                                                     
                                                     <div class="avatar avatar-online mr-5">
-                                                        <img class="avatar-img" src="/img/no-photo.png" alt="Anna Bridges">
+                                                        <img class="avatar-img" src="/files/profiles/<?php echo AuthComponent::user('User')['image'] ?>" alt="Anna Bridges">
                                                     </div>
                                                     
                                                     
@@ -358,7 +347,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
                                                         
                                                         
                                                         <div class="avatar mr-5">
-                                                            <img class="avatar-img" src="/img/no-photo.png" alt="Bootstrap Themes">
+                                                            <img class="avatar-img" src="/files/profiles/<?php echo AuthComponent::user('User')['image'] ?>" alt="Bootstrap Themes">
                                                         </div>
                                                         
                                                         <div class="media-body overflow-hidden">
@@ -399,19 +388,6 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
                                     <h2 class="font-bold mb-6">Settings</h2>
                                     <!-- Title -->
 
-                                    <!-- Search -->
-                                    <form class="mb-6">
-                                        <div class="input-group">
-                                            <input type="text" class="form-control" placeholder="Search for messages or users..." aria-label="Search for messages or users...">
-                                            <div class="input-group-append">
-                                                <button class="btn btn-ico btn-secondary btn-minimal" type="submit">
-													<i class="far fa-paper-plane"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </form>
-                                    <!-- Search -->
-
                                     <!-- Accordion -->
                                     <div class="accordion mb-n6" id="profile-settings">
 
@@ -428,7 +404,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 
                                                         <!-- Icon -->
                                                         <div class="col-auto">
-                                                            <i class="text-muted icon-md fe-user"></i>
+                                                            <i class="far fa-user-circle fa-2x"></i>
                                                         </div>
                                                     </div>
                                                 </a>
@@ -436,20 +412,22 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 
                                             <div id="profile-settings-account" class="collapse" data-parent="#profile-settings">
                                                 <div class="card-body">
-
-                                                    <form action="#">
+                                                    <!-- <form id='profile-form' enctype="multipart/form-data", charset="utf-8"> -->
+                                                    <?php echo $this->Form->create('User', array( 'enctype' => 'multipart/form-data', 'url' => '/users/edit/'. AuthComponent::user('User')['id'])); ?>
+                                                        <input type="hidden" name="id" id="profile-id" value="<?php echo AuthComponent::user('User')['id']; ?>">
                                                         <!-- Avatar -->
                                                         <div class="form-group">
                                                             <label class="small">Avatar</label>
                                                             <div class="bg-secondary rounded p-6">
                                                                 <div class="media">
                                                                     <div class="avatar bg-primary text-white mr-5">
-                                                                        <span>DG</span>
+                                                                        <img src="/files/profiles/<?php echo AuthComponent::user('User')['image'] ?>">
                                                                     </div>
                                                                     <div class="media-body">
                                                                         <label class="btn btn-sm btn-primary mb-3">
                                                                             Upload photo
-                                                                            <input type="file" class="d-none">
+                                                                            <!-- <input type="file" name="image" id="image" class="d-none" required> -->
+                                                                            <?php echo $this->Form->input('image', array('class' => 'd-none', 'id' => 'upload-chat-photo', 'type' => 'file', 'label' => '')); ?>
                                                                         </label>
                                                                         <p class="small text-muted">You can upload jpg, gif or png image files. Max file size 3mb.</p>
                                                                     </div>
@@ -458,28 +436,37 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
                                                         </div>
 
                                                         <div class="form-group">
-                                                            <label class="small" for="profile-name">Name</label>
-                                                            <input name="profile-name" id="profile-name" type="text" class="form-control" placeholder="Type your name">
+                                                            <label class="small" for="name">Name</label>
+                                                            <input name="name" id="name" type="text" class="form-control" placeholder="Type your fullname" value="<?php echo AuthComponent::user('User')['name'] ?>">
                                                         </div>
 
                                                         <div class="form-group">
-                                                            <label class="small" for="profile-email">Email</label>
-                                                            <input name="profile-email" id="profile-email" type="email" class="form-control" placeholder="you@yoursite.com">
+                                                            <label class="small" for="email">Email</label>
+                                                            <input name="email" id="email" type="email" class="form-control" placeholder="you@yoursite.com" value="<?php echo AuthComponent::user('User')['email'] ?>">
                                                         </div>
 
                                                         <div class="form-group">
-                                                            <label class="small" for="profile-phone">Phone</label>
-                                                            <input name="profile-phone" id="profile-phone" type="text" class="form-control" placeholder="(123) 456-7890">
+                                                            <label class="small" for="gender">Gender</label>
+                                                            <select name="gender" id="gender" class='form-control'>
+                                                                <option value="" hidden>Choose your Gender</option>
+                                                                <option value="m" <?php echo AuthComponent::user('User')['gender'] == 'm' ? 'selected' : '' ?>>Male</option>
+                                                                <option value="f" <?php echo AuthComponent::user('User')['gender'] == 'f' ? 'selected' : '' ?>>Female</option>
+                                                                <option value="o" <?php echo AuthComponent::user('User')['gender'] == 'o' ? 'selected' : '' ?>>Others</option>
+                                                            </select>
                                                         </div>
 
                                                         <div class="form-group">
-                                                            <label for="profile-about">Bio</label>
-                                                            <textarea class="form-control" id="profile-about" rows="3" placeholder="Express yourself" data-autosize="true"></textarea>
+                                                            <label class="small" for="birthdate">Birthdate</label>
+                                                            <input name="birthdate" id="birthdate" type="date" class="form-control" placeholder="you@yoursite.com" value="<?php echo AuthComponent::user('User')['birthdate'] ?>">
                                                         </div>
 
-                                                        <button class="btn btn-primary btn-block" type="submit">Save Preferences</button>
-                                                    </form>
-
+                                                        <div class="form-group">
+                                                            <label for="hubby">Hubby</label>
+                                                            <textarea class="form-control" id="hubby" rows="3" name="hubby" placeholder="Express yourself" data-autosize="true"><?php echo AuthComponent::user('User')['hubby'] ?></textarea>
+                                                        </div>
+                                                        <?php echo $this->Form->end(array('label' => 'Save Preferences', 'class' => 'btn btn-primary btn-block')); ?>
+                                                        <!-- <button id="profile-edit-submit" class="btn btn-primary btn-block">Save Preferences</button>
+                                                    </form> -->
                                                 </div>
                                             </div><!-- .collapse -->
 
@@ -499,7 +486,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 
                                                         <!-- Icon -->
                                                         <div class="col-auto">
-                                                            <i class="text-muted icon-md fe-shield"></i>
+                                                            <i class="fas fa-user-shield fa-2x"></i>
                                                         </div>
                                                     </div>
                                                 </a>
@@ -526,161 +513,6 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
                                                         <button class="btn btn-primary btn-block" type="submit">
                                                             Change Password
                                                         </button>
-                                                    </form>
-                                                </div>
-                                            </div><!-- .collapse -->
-
-                                        </div>
-                                        <!-- Card -->
-
-                                        <!-- Card -->
-                                        <div class="card mb-6">
-                                            <div class="card-header position-relative">
-                                                <a href="#" class="text-reset d-block stretched-link collapsed" data-toggle="collapse" data-target="#profile-settings-notifications" aria-controls="profile-settings-notifications" aria-expanded="true">
-                                                    <div class="row no-gutters align-items-center">
-                                                        <!-- Title -->
-                                                        <div class="col">
-                                                            <h5>Notifications</h5>
-                                                            <p>Update your profile details.</p>
-                                                        </div>
-
-                                                        <!-- Icon -->
-                                                        <div class="col-auto">
-                                                            <i class="text-muted icon-md fe-bell"></i>
-                                                        </div>
-                                                    </div>
-                                                </a>
-                                            </div>
-
-                                            <div id="profile-settings-notifications" class="collapse" data-parent="#profile-settings">
-                                                <div class="card-body">
-
-                                                    <ul class="list-group list-group-flush">
-                                                        <li class="list-group-item pt-0 px-0">
-                                                            <div class="d-flex align-items-center justify-content-between mb-2">
-                                                                <!-- Title -->
-                                                                <h6 class="mb-0">Sound</h6>
-
-                                                                <!-- Switch -->
-                                                                <div class="custom-control custom-switch mr-n3">
-                                                                    <input type="checkbox" class="custom-control-input" id="custom-switch-1">
-                                                                    <label class="custom-control-label" for="custom-switch-1"></label>
-                                                                </div>
-                                                            </div>
-                                                            <p>Update your profile details.</p>
-                                                        </li>
-
-                                                        <li class="list-group-item px-0">
-                                                            <div class="d-flex justify-content-between mb-2">
-                                                                <!-- Title -->
-                                                                <h6 class="mb-0">Exceptions</h6>
-
-                                                                <!-- Switch -->
-                                                                <div class="custom-control custom-switch mr-n3">
-                                                                    <input type="checkbox" class="custom-control-input" id="custom-switch-2">
-                                                                    <label class="custom-control-label" for="custom-switch-2"></label>
-                                                                </div>
-                                                            </div>
-                                                            <p>Update your profile details.</p>
-                                                        </li>
-
-                                                        <li class="list-group-item pb-0 px-0">
-                                                            <div class="d-flex justify-content-between mb-2">
-                                                                <!-- Title -->
-                                                                <h6 class="mb-0">Message Preview</h6>
-
-                                                                <!-- Switch -->
-                                                                <div class="custom-control custom-switch mr-n3">
-                                                                    <input type="checkbox" class="custom-control-input" id="custom-switch-3">
-                                                                    <label class="custom-control-label" for="custom-switch-3"></label>
-                                                                </div>
-                                                            </div>
-                                                            <p>Update your profile details.</p>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </div><!-- .collapse -->
-
-                                        </div>
-                                        <!-- Card -->
-
-                                        <!-- Card -->
-                                        <div class="card mb-6">
-                                            <div class="card-header position-relative">
-                                                <a href="#" class="text-reset d-block stretched-link collapsed" data-toggle="collapse" data-target="#profile-settings-social" aria-controls="profile-settings-social" aria-expanded="true">
-                                                    <div class="row no-gutters align-items-center">
-                                                        <!-- Title -->
-                                                        <div class="col">
-                                                            <h5>Social</h5>
-                                                            <p>Update your profile details.</p>
-                                                        </div>
-
-                                                        <!-- Icon -->
-                                                        <div class="col-auto">
-                                                            <i class="text-muted icon-md fe-share-2"></i>
-                                                        </div>
-                                                    </div>
-                                                </a>
-                                            </div>
-
-                                            <div id="profile-settings-social" class="collapse" data-parent="#profile-settings">
-                                                <div class="card-body">
-
-                                                    <form action="#">
-
-                                                        <!-- Twitter -->
-                                                        <div class="form-group">
-                                                            <label class="small" for="profile-twitter">Twitter</label>
-                                                            <div class="input-group">
-                                                                <div class="input-group-prepend">
-                                                                    <div class="btn btn-ico btn-secondary btn-minimal">
-                                                                        <i class="fe-twitter"></i>
-                                                                    </div>
-                                                                </div>
-                                                                <input id="profile-twitter" type="text" class="form-control" placeholder="Username" aria-label="Username">
-                                                            </div>
-                                                        </div>
-
-                                                        <!-- Facebook -->
-                                                        <div class="form-group">
-                                                            <label class="small" for="profile-facebook">Facebook</label>
-                                                            <div class="input-group">
-                                                                <div class="input-group-prepend">
-                                                                    <div class="btn btn-ico btn-secondary btn-minimal">
-                                                                        <i class="fe-facebook"></i>
-                                                                    </div>
-                                                                </div>
-                                                                <input id="profile-facebook" type="text" class="form-control" placeholder="Username" aria-label="Username">
-                                                            </div>
-                                                        </div>
-
-                                                        <!-- Instagram -->
-                                                        <div class="form-group">
-                                                            <label class="small" for="profile-instagram">Instagram</label>
-                                                            <div class="input-group">
-                                                                <div class="input-group-prepend">
-                                                                    <div class="btn btn-ico btn-secondary btn-minimal">
-                                                                        <i class="fe-instagram"></i>
-                                                                    </div>
-                                                                </div>
-                                                                <input id="profile-instagram" type="text" class="form-control" placeholder="Username" aria-label="Username">
-                                                            </div>
-                                                        </div>
-
-                                                        <!-- Github -->
-                                                        <div class="form-group">
-                                                            <label class="small" for="profile-github">Github</label>
-                                                            <div class="input-group">
-                                                                <div class="input-group-prepend">
-                                                                    <div class="btn btn-ico btn-secondary btn-minimal">
-                                                                        <i class="fe-github"></i>
-                                                                    </div>
-                                                                </div>
-                                                                <input id="profile-github" type="text" class="form-control" placeholder="Username" aria-label="Username">
-                                                            </div>
-                                                        </div>
-
-                                                        <button class="btn btn-primary btn-block" type="submit">Save Preferences</button>
                                                     </form>
                                                 </div>
                                             </div><!-- .collapse -->
@@ -726,11 +558,11 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
                                             <div class="text-center py-6">
                                                 <!-- Photo -->
                                                 <div class="avatar avatar-xl mb-5">
-                                                    <img class="avatar-img" src="/img/no-photo.png" alt="">
+                                                    <img class="avatar-img" src="/files/profiles/<?php echo AuthComponent::user('User')['image'] ?>" alt="">
                                                 </div>
 
-                                                <h5>Matthew Wiggins</h5>
-                                                <p class="text-muted">Bootstrap is an open source toolkit for developing web with HTML.</p>
+                                                <h5><?php echo AuthComponent::user('User')['name'] ?></h5>
+                                                <p class="text-muted"><?php echo AuthComponent::user('User')['hubby'] ?></p>
                                             </div>
                                         </div>
                                     </div>
@@ -743,20 +575,40 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
                                                 <li class="list-group-item px-0 py-6">
                                                     <div class="media align-items-center">
                                                         <div class="media-body">
-                                                            <p class="small text-muted mb-0">Country</p>
-                                                            <p>Warsaw, Poland</p>
+                                                            <p class="small text-muted mb-0">Gender</p>
+                                                            <?php
+                                                                $gender = '';
+                                                                switch (AuthComponent::user('User')['gender']) {
+                                                                    case 'm':
+                                                                        echo $gender = 'Male';
+                                                                        break;
+                                                                    
+                                                                    case 'f':
+                                                                        echo $gender = 'Female';
+                                                                        break;
+                                                                    
+                                                                    default:
+                                                                        echo $gender = 'Others';
+                                                                        break;
+                                                                }
+                                                            ?>
                                                         </div>
-                                                        <i class="text-muted icon-sm fe-globe"></i>
-                                                    </div>
-                                                </li>
-
-                                                <li class="list-group-item px-0 py-6">
-                                                    <div class="media align-items-center">
-                                                        <div class="media-body">
-                                                            <p class="small text-muted mb-0">Phone</p>
-                                                            <p>+39 02 87 21 43 19</p>
-                                                        </div>
-                                                        <i class="text-muted icon-sm fe-mic"></i>
+                                                        <?php
+                                                            $gender = '';
+                                                            switch (AuthComponent::user('User')['gender']) {
+                                                                case 'm':
+                                                                    echo '<i class="fas fa-mars"></i>';
+                                                                    break;
+                                                                
+                                                                case 'f':
+                                                                    echo '<i class="fas fa-venus"></i>';
+                                                                    break;
+                                                                
+                                                                default:
+                                                                    echo '<i class="fas fa-genderless"></i>';
+                                                                    break;
+                                                            }
+                                                        ?>
                                                     </div>
                                                 </li>
 
@@ -764,55 +616,30 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
                                                     <div class="media align-items-center">
                                                         <div class="media-body">
                                                             <p class="small text-muted mb-0">Email</p>
-                                                            <p>anna@gmail.com</p>
+                                                            <p><?php echo AuthComponent::user('User')['email'] ?></p>
                                                         </div>
-                                                        <i class="text-muted icon-sm fe-mail"></i>
+                                                        <i class="far fa-envelope"></i>
                                                     </div>
                                                 </li>
 
                                                 <li class="list-group-item px-0 py-6">
                                                     <div class="media align-items-center">
                                                         <div class="media-body">
-                                                            <p class="small text-muted mb-0">Time</p>
-                                                            <p>10:03 am</p>
+                                                            <p class="small text-muted mb-0">Birthday</p>
+                                                            <p><?php $date = date_create(AuthComponent::user('User')['birthdate']); echo date_format($date, 'M d, Y'); ?></p>
                                                         </div>
-                                                        <i class="text-muted icon-sm fe-clock"></i>
+                                                        <i class="fas fa-birthday-cake"></i>
                                                     </div>
                                                 </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                    <!-- Card -->
-
-                                    <!-- Card -->
-                                    <div class="card mb-6">
-                                        <div class="card-body">
-                                            <ul class="list-group list-group-flush">
-                                                <li class="list-group-item px-0 py-6">
-                                                    <a href="#" class="media text-muted">
-                                                        <div class="media-body align-self-center">
-                                                            Twitter
-                                                        </div>
-                                                        <i class="icon-sm fe-twitter"></i>
-                                                    </a>
-                                                </li>
 
                                                 <li class="list-group-item px-0 py-6">
-                                                    <a href="#" class="media text-muted">
-                                                        <div class="media-body align-self-center">
-                                                        Facebook
+                                                    <div class="media align-items-center">
+                                                        <div class="media-body">
+                                                            <p class="small text-muted mb-0">Last Login Time</p>
+                                                            <p><?php echo AuthComponent::user('User')['last_login_time'] ?></p>
                                                         </div>
-                                                        <i class="icon-sm fe-facebook"></i>
-                                                    </a>
-                                                </li>
-
-                                                <li class="list-group-item px-0 py-6">
-                                                    <a href="#" class="media text-muted">
-                                                        <div class="media-body align-self-center">
-                                                            Github
-                                                        </div>
-                                                        <i class="icon-sm fe-github"></i>
-                                                    </a>
+                                                        <i class="far fa-clock"></i>
+                                                    </div>
                                                 </li>
                                             </ul>
                                         </div>
@@ -820,10 +647,10 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
                                     <!-- Card -->
 
                                     <!-- Button -->
-                                    <button type="button" class="btn btn-block btn-secondary d-flex align-items-center">
+                                    <a href="/logout" class="btn btn-block btn-secondary d-flex align-items-center">
                                         Logout
-                                        <span class="fe-log-out ml-auto"></span>
-                                    </button>
+                                        <i class="fas fa-power-off ml-auto"></i>
+                                    </a>
 
                                 </div>
                             </div>
@@ -946,6 +773,28 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 			</p>
 		</div> -->
 	</div>
-	<?php echo $this->element('sql_dump'); ?>
+    <?php echo $this->element('sql_dump'); ?>
+    <script>
+        $(function(){
+            $('#profile-edit-submit').click(function (e) { 
+                e.preventDefault()
+                console.log($('#profile-form')[0])
+                let id = $('#profile-id').val();
+                $.ajax({
+                    url: `/users/edit/${id}`,
+                    type: 'put',
+                    dataType: 'json',
+                    data: $('#profile-form').serialize(),
+                    success: function(data) {
+                        console.log(data)
+                    },
+                    error: function(error){
+                        console.log(error)
+                    }
+                });
+            });
+            
+        })
+    </script>
 </body>
 </html>

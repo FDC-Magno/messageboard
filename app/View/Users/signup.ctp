@@ -7,7 +7,7 @@
 	<p class="text-center mb-6">Welcome to the official Chat web-client.</p>
 
 	<!-- Form -->
-	<?php echo $this->Form->create('User', array('class' => 'mb-6')); ?>
+	<?php echo $this->Form->create('User', array('class' => 'mb-6', 'type' => 'file')); ?>
 		<input type="hidden" name="data[User][id]" id="UserId">
 		<div class="form-group input text">
 			<label class="small">Photo</label>
@@ -17,7 +17,7 @@
 				</div>
 
 				<p class="small text-muted mb-0">You can upload jpg, gif or png files. <br> Max file size 3mb.</p>
-				<?php echo $this->Form->input('image', array('class' => 'd-none', 'id' => 'upload-chat-photo', 'type' => 'file')); ?>
+				<?php echo $this->Form->input('image', array('class' => 'd-none', 'id' => 'upload-chat-photo', 'type' => 'file', 'label' => '')); ?>
 				<label class="stretched-label mb-0" for="upload-chat-photo"></label>
 			</div>
 		</div>
@@ -25,10 +25,13 @@
 		<?php echo $this->Form->input('name', array('class' => 'form-control mt-0', 'label' => '', 'placeholder' => 'Enter full name')); ?>
 
 		<!-- Email -->
-		<input type="email" name="email" id="email" class="form-control mt-5" placeholder="Enter Email">
+		<input type="email" name="email" id="email" class="form-control mt-5" placeholder="Enter Email" value="<?php print_r($this->request->data('email')); ?>">
 
 		<!-- Password -->
-		<?php echo $this->Form->input('password', array('class' => 'form-control mb-5', 'label' => '', 'placeholder' => 'Enter Password')); ?>
+		<?php echo $this->Form->input('password', array('class' => 'form-control', 'label' => '', 'placeholder' => 'Enter Password')); ?>
+
+		<!-- Password Confirm-->
+		<?php echo $this->Form->input('password_confirm', array('class' => 'form-control mb-5', 'label' => '', 'placeholder' => 'Confirm Password', 'type' => 'password')); ?>
 
 		<!-- gender -->
 		<div class="form-group input text">

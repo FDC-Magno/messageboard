@@ -33,7 +33,8 @@ App::uses('Controller', 'Controller');
 class AppController extends Controller {
 
     public $components = array(
-        'Flash', 
+        'Flash',
+        'DebugKit.Toolbar',
         'Auth' => array(
             'loginAction' => array(
                 'controller' => 'users',
@@ -44,16 +45,8 @@ class AppController extends Controller {
                 'action' => 'login'
             ),
             'loginRedirect' => array(
-                'url' => '/welcome'
-            ),
-            'authError' => 'Did you really think you are allowed to see that?',
-            'authenticate' => array(
-                'Form' => array(
-                    'fields' => array(
-                      'username' => 'my_user_model_username_field', //Default is 'username' in the userModel
-                      'password' => 'my_user_model_password_field'  //Default is 'password' in the userModel
-                    )
-                )
+                'controller' => 'users',
+                'action' => 'welcome'
             )
         )
     );

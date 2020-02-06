@@ -28,7 +28,7 @@ class User extends AppModel {
 				//'allowEmpty' => false,
 				'required' => true,
 				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
+				'on' => 'create', // Limit validation to 'create' or 'update' operations
 			),
 			'notBlank' => array(
 				'rule' => array('notBlank'),
@@ -36,8 +36,8 @@ class User extends AppModel {
 				//'allowEmpty' => false,
 				'required' => true,
 				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
+				'on' => 'create', // Limit validation to 'create' or 'update' operations
+			)
 		),
 		'email' => array(
 			'email' => array(
@@ -46,19 +46,44 @@ class User extends AppModel {
 				//'allowEmpty' => false,
 				'required' => true,
 				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
+				'on' => 'create', // Limit validation to 'create' or 'update' operations
 			),
+			'notBlank' => array(
+				'rule' => array('notBlank'),
+				'message' => 'E-mail is required',
+				//'allowEmpty' => false,
+				'required' => true,
+				//'last' => false, // Stop validation after this rule
+				'on' => 'create', // Limit validation to 'create' or 'update' operations
+			),
+            'unique' => array(
+                'rule' => array('isUnique'),
+				'message' => 'This email is already in use',
+				'on' => 'create'
+            )
 		),
 		'password' => array(
 			'minLength' => array(
 				'rule' => array('minLength', '6'),
 				'message' => 'Password must be at least 6 letters long',
 				//'allowEmpty' => false,
-				//'required' => false,
+				'required' => true,
 				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
+				'on' => 'create', // Limit validation to 'create' or 'update' operations
 			),
-		),
+		),   
+        'password_confirm' => array(
+            'notBlank' => array(
+                'rule' => array('notBlank'),
+                'message' => 'Please confirm your password',
+				'on' => 'create', // Limit validation to 'create' or 'update' operations
+            ),
+             'equaltofield' => array(
+                'rule' => array('equaltofield','password'),
+                'message' => 'Both passwords must match.',
+				'on' => 'create', // Limit validation to 'create' or 'update' operations
+            )
+        ),
 		'image' => array(
 			// 'mimeType' => array(
 			// 	'rule' => array('mimeType', array('image/jpeg', 'image/png')),
@@ -74,7 +99,7 @@ class User extends AppModel {
 				//'allowEmpty' => false,
 				'required' => true,
 				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
+				'on' => 'create', // Limit validation to 'create' or 'update' operations
 			),
 		),
 		'gender' => array(
@@ -84,7 +109,7 @@ class User extends AppModel {
 				//'allowEmpty' => false,
 				'required' => true,
 				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
+				'on' => 'create', // Limit validation to 'create' or 'update' operations
 			)
 		),
 		'birthdate' => array(
@@ -94,7 +119,7 @@ class User extends AppModel {
 				//'allowEmpty' => false,
 				'required' => true,
 				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
+				'on' => 'create', // Limit validation to 'create' or 'update' operations
 			),
 		),
 		'hubby' => array(
@@ -104,7 +129,7 @@ class User extends AppModel {
 				//'allowEmpty' => false,
 				'required' => true,
 				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
+				'on' => 'create', // Limit validation to 'create' or 'update' operations
 			),
 			'maxLength' => array(
 				'rule' => array('maxLength', '255'),
@@ -112,7 +137,7 @@ class User extends AppModel {
 				//'allowEmpty' => false,
 				'required' => true,
 				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
+				'on' => 'create', // Limit validation to 'create' or 'update' operations
 			),
 		),
 	);
@@ -124,41 +149,57 @@ class User extends AppModel {
  *
  * @var array
  */
-	public $hasMany = array(
-		'Message' => array(
-			'className' => 'Message',
-			'foreignKey' => 'user_id',
-			'dependent' => false,
-			'conditions' => '',
-			'fields' => '',
-			'order' => 'Message.created ASC',
-			'limit' => '',
-			'offset' => '',
-			'exclusive' => '',
-			'finderQuery' => '',
-			'counterQuery' => ''
-		),
-		'MyConversations' => array(
-			'className' => 'Conversations',
-			'foreignKey' => 'receiver_id',
-			'dependent' => false,
-			'conditions' => '',
-			'fields' => '',
-			'order' => '',
-			'limit' => '',
-			'offset' => '',
-			'exclusive' => '',
-			'finderQuery' => '',
-			'counterQuery' => ''
-		)
-	);
+	// public $hasMany = array(
+	// 	'Message' => array(
+	// 		'className' => 'Message',
+	// 		'foreignKey' => 'user_id',
+	// 		'dependent' => false,
+	// 		'conditions' => '',
+	// 		'fields' => '',
+	// 		'order' => 'Message.created ASC',
+	// 		'limit' => '',
+	// 		'offset' => '',
+	// 		'exclusive' => '',
+	// 		'finderQuery' => '',
+	// 		'counterQuery' => ''
+	// 	),
+	// 	'MyConversations' => array(
+	// 		'className' => 'Conversations',
+	// 		'foreignKey' => 'receiver_id',
+	// 		'dependent' => false,
+	// 		'conditions' => '',
+	// 		'fields' => '',
+	// 		'order' => '',
+	// 		'limit' => '',
+	// 		'offset' => '',
+	// 		'exclusive' => '',
+	// 		'finderQuery' => '',
+	// 		'counterQuery' => ''
+	// 	)
+	// );
 
-	public function beforeSave($options = array())
-	{
-		$this->data['User']['password'] = AuthComponent::password(
-			$this->data['User']['password']
-		);
-		return true;
+	/**
+	 * FIXME: Need to prevent rehashing on user edit
+	 */
+	public function beforeSave($options = array()){
+		// check if user wants to create or edit files
+		if(empty($this->data[$this->alias]['id'])){
+			$this->data[$this->alias]['password'] = AuthComponent::password(
+				$this->data[$this->alias]['password']
+			);
+			return true;
+		}
 	}
 
+	// password confirmation on user signup
+	public function equaltofield($check,$otherfield)
+    {
+        //get name of field
+        $fname = '';
+        foreach ($check as $key => $value){
+            $fname = $key;
+            break;
+        }
+        return $this->data[$this->name][$otherfield] === $this->data[$this->name][$fname];
+    }
 }

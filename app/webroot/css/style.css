@@ -9,3 +9,7 @@
 pre.stack-trace {
     color: white;
 }
+
+.error .error-message{
+    color: red;
+}

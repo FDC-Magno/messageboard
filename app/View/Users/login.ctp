@@ -9,7 +9,7 @@
     <!-- Form -->
     <?php echo $this->Form->create('Users') ?>
         <!-- Email -->
-        <?php echo $this->Form->input('email', array('class' => 'form-control', 'label' => '', 'placeholder' => 'Enter username')); ?>
+        <?php echo $this->Form->input('email', array('class' => 'form-control', 'label' => '', 'placeholder' => 'Enter E-mail')); ?>
 
         <!-- Password -->
         <?php echo $this->Form->input('password', array('class' => 'form-control mb-5', 'label' => '', 'placeholder' => 'Enter password')); ?>
