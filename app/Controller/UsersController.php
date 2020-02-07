@@ -13,7 +13,7 @@ class UsersController extends AppController {
 
 	public function beforeFilter(){
 		parent::beforeFilter();
-		$this->Auth->allow('add', 'signup', 'index', 'edit');
+		$this->Auth->allow('add', 'signup', 'index');
 	}
 
 	public $components = array(
@@ -96,30 +96,28 @@ class UsersController extends AppController {
 	public function edit(){
 		//set layout as false to unset default CakePHP layout. This is to prevent our JSON response from mixing with HTML
 		$this->layout = false; 
+		$directory = WWW_ROOT.DS."files".DS."profiles".DS;
 		//set default response
 		$response = array('status'=>'failed', 'message'=>'HTTP method not allowed');
 		
-		//check if HTTP method is PUT
+		//check if HTTP method is correct for edit
 		if($this->request->is('post')){
 			//get data from request object
-			// $data = $this->request->input('json_decode', true);
-			$data = $this->request->data;
-			if(empty($data)){
-				$data = $this->request->data;
-			}
-			
+			$data = $this->request->data;			
 			//check if product ID was provided
 			if(!empty($data['id'])){
 				//set the product ID to update
 				$user = $this->User->findById($data['id']);
-				$finalData = array_merge($user, $data);
+				$finalData = array_merge($user['User'], $data);
 				$this->User->id = $data['id'];
-				$finalData['User']['image'] = $data['User']['image']['name'];
-				// var_dump($data['User']['image']['name']);+
-				// var_dump($finalData['User']);
-				// var_dump($this->User->save($data));
+				$finalData['image'] = $data['image']['name'];
+				// var_dump($data);
+				var_dump($finalData);
+				// var_dump($this->User->id);
 				// var_dump($this->User->validationErrors);
 				if($this->User->save($finalData)){
+					$this->Auth->login($this->User->read(null, $this->Auth->User('id')));
+					move_uploaded_file($data['image']['tmp_name'], $directory.$finalData['image']);
 					$response = array('status'=>'success','message'=>'Profile successfully updated');
 				} else {
 					$response['message'] = "Failed to update Profile";

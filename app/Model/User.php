@@ -179,11 +179,12 @@ class User extends AppModel {
 	// );
 
 	/**
-	 * FIXME: Need to prevent rehashing on user edit
+	 * FIXED: Need to prevent rehashing on user edit
 	 */
 	public function beforeSave($options = array()){
 		// check if user wants to create or edit files
-		if(empty($this->data[$this->alias]['id'])){
+		// var_dump($this->id);
+		if(empty($this->id)){
 			$this->data[$this->alias]['password'] = AuthComponent::password(
 				$this->data[$this->alias]['password']
 			);

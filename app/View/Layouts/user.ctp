@@ -42,16 +42,16 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 	?>
 </head>
 <body>
-    <?php echo $this->Flash->render(); ?>
+	<div class="col-lg-3 col-sm-12 m-auto">
+		<?php echo $this->Flash->render(); ?>
+	</div>
     <div class="layout">
-
-        
     <div class="container d-flex flex-column">
         <div class="row align-items-center justify-content-center no-gutters min-vh-100">
 
         <!-- Render View and Flash Messages -->
                 
-                <?php echo $this->fetch('content'); ?>
+			<?php echo $this->fetch('content'); ?>
                 
         <!-- Render View and Flash Messages -->
 

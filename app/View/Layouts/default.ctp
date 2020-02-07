@@ -413,7 +413,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
                                             <div id="profile-settings-account" class="collapse" data-parent="#profile-settings">
                                                 <div class="card-body">
                                                     <!-- <form id='profile-form' enctype="multipart/form-data", charset="utf-8"> -->
-                                                    <?php echo $this->Form->create('User', array( 'enctype' => 'multipart/form-data', 'url' => '/users/edit/'. AuthComponent::user('User')['id'])); ?>
+                                                    <?php echo $this->Form->create(false, array( 'enctype' => 'multipart/form-data', 'url' => '/users/edit/'. AuthComponent::user('User')['id'])); ?>
                                                         <input type="hidden" name="id" id="profile-id" value="<?php echo AuthComponent::user('User')['id']; ?>">
                                                         <!-- Avatar -->
                                                         <div class="form-group">
