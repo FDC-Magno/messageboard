@@ -29,6 +29,8 @@
 	Router::connect('/home', array('controller' => 'pages', 'action' => 'display', 'home'));
 	// Router::connect('/users/edit/:id', array('controller' => 'users', 'action' => 'edit', 'method' => 'PUT'));
 	Router::connect('/login', array('controller' => 'users', 'action' => 'login'));
+	Router::connect('/chat/:id', array('controller' => 'conversations', 'action' => 'view'));
+	Router::connect('/chat/:id/add', array('controller' => 'conversations', 'action' => 'add'));
 	Router::connect('/logout', array('controller' => 'users', 'action' => 'logout'));
 	Router::connect('/signup', array('controller' => 'users', 'action' => 'signup'));
 	Router::connect('/welcome', array('controller' => 'users', 'action' => 'welcome'));
@@ -36,6 +38,7 @@
  * ...and connect the rest of 'Pages' controller's URLs.
  */
 	Router::connect('/pages/*', array('controller' => 'pages', 'action' => 'display'));
+	Router::parseExtensions('json'); 
 
 /**
  * Load all plugin routes. See the CakePlugin documentation on

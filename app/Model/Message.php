@@ -24,8 +24,8 @@ class Message extends AppModel {
 				//'on' => 'create', // Limit validation to 'create' or 'update' operations
 			),
 			'maxLength' => array(
-				'rule' => array('maxLength'),
-				//'message' => 'Your custom message here',
+				'rule' => array('maxLength', '255'),
+				'message' => 'Your custom message here',
 				//'allowEmpty' => false,
 				//'required' => false,
 				//'last' => false, // Stop validation after this rule
@@ -57,12 +57,12 @@ class Message extends AppModel {
 			'fields' => '',
 			'order' => ''
 		),
-		'Conversation' => array(
-			'className' => 'Conversation',
-			'foreignKey' => 'conversation_id',
-			'conditions' => '',
-			'fields' => '',
-			'order' => ''
-		)
+		// 'Conversation' => array(
+		// 	'className' => 'Conversation',
+		// 	'foreignKey' => 'conversation_id',
+		// 	'conditions' => '',
+		// 	'fields' => '',
+		// 	'order' => ''
+		// )
 	);
 }

@@ -13,23 +13,6 @@ pre.stack-trace {
 form .error-message{
     color: red;
 }
-
-.message{
-    color: red;
-}
-
-.success,
-.message,
-.cake-error,
-.cake-debug,
-.notice,
-p.error,
-.error-message {
-    width: 20%;
-    margin: auto;
-    text-align: center;
-}
-
 .error{
     color: red;
     font-size: 14px;

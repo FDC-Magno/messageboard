@@ -36,6 +36,7 @@ class AppController extends Controller {
         'Flash',
         'DebugKit.Toolbar',
         'Session',
+        'RequestHandler',
         'Auth' => array(
             'loginAction' => array(
                 'controller' => 'users',

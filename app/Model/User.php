@@ -149,34 +149,34 @@ class User extends AppModel {
  *
  * @var array
  */
-	// public $hasMany = array(
-	// 	'Message' => array(
-	// 		'className' => 'Message',
-	// 		'foreignKey' => 'user_id',
-	// 		'dependent' => false,
-	// 		'conditions' => '',
-	// 		'fields' => '',
-	// 		'order' => 'Message.created ASC',
-	// 		'limit' => '',
-	// 		'offset' => '',
-	// 		'exclusive' => '',
-	// 		'finderQuery' => '',
-	// 		'counterQuery' => ''
-	// 	),
-	// 	'MyConversations' => array(
-	// 		'className' => 'Conversations',
-	// 		'foreignKey' => 'receiver_id',
-	// 		'dependent' => false,
-	// 		'conditions' => '',
-	// 		'fields' => '',
-	// 		'order' => '',
-	// 		'limit' => '',
-	// 		'offset' => '',
-	// 		'exclusive' => '',
-	// 		'finderQuery' => '',
-	// 		'counterQuery' => ''
-	// 	)
-	// );
+	public $hasMany = array(
+		'Message' => array(
+			'className' => 'Message',
+			'foreignKey' => 'user_id',
+			'dependent' => false,
+			'conditions' => '',
+			'fields' => '',
+			'order' => 'Message.created ASC',
+			'limit' => '',
+			'offset' => '',
+			'exclusive' => '',
+			'finderQuery' => '',
+			'counterQuery' => array('Message.read' => 'NULL')
+		),
+		'Conversation' => array(
+			'className' => 'Conversation',
+			'foreignKey' => 'receiver_id',
+			'dependent' => false,
+			'conditions' => '',
+			'fields' => array('id', 'receiver_id', 'sender_id', 'created'),
+			'order' => '',
+			'limit' => '10',
+			'offset' => '',
+			'exclusive' => '',
+			'finderQuery' => '',
+			'counterQuery' => ''
+		)
+	);
 
 	/**
 	 * FIXED: Need to prevent rehashing on user edit

@@ -10,10 +10,11 @@ class MessagesController extends AppController {
  *
  * @var mixed
  */
-	public $scaffold;
 
 	public function beforeFilter()
 	{
+		parent::beforeFilter();
 		// $this->Auth->allow();
 	}
+
 }

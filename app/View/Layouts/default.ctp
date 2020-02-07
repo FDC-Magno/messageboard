@@ -28,8 +28,9 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1, shrink-to-fit=no">
 	<?php
 		echo $this->Html->meta('icon', '/img/logo.png');
-		echo $this->Html->css('template.dark.min.css', array('media' => '(prefers-color-scheme: dark)'));
 		echo $this->Html->css('style.css');
+		echo $this->Html->css('template.min.css');
+		echo $this->Html->css('template.dark.min.css', array('media' => '(prefers-color-scheme: dark)'));
 		echo $this->Html->script('https://use.fontawesome.com/releases/v5.12.0/js/all.js');
 		echo $this->Html->script('https://use.fontawesome.com/releases/v5.12.0/js/v4-shims.js');
 		echo $this->Html->script('jquery.min.js');
@@ -62,13 +63,6 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 
                 <!-- Menu -->
                 <ul class="nav navbar-nav flex-row flex-lg-column flex-grow-1 justify-content-between py-2 py-lg-0" role="tablist">
-
-                    <!-- Friend -->
-                    <li class="nav-item mt-lg-8">
-                        <a class="nav-link position-relative p-0 py-2" data-toggle="tab" href="#tab-content-friends" title="Friends" role="tab">
-							<i class="far fa-user fa-2x"></i>
-                        </a>
-                    </li>
 
                     <!-- Chats -->
                     <li class="nav-item mt-lg-8 flex-lg-grow-1">
@@ -125,7 +119,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
                                             <input type="text" class="form-control" placeholder="Search for messages or users..." aria-label="Search for messages or users...">
                                             <div class="input-group-append">
                                                 <button class="btn btn-ico btn-secondary btn-minimal" type="submit">
-													<i class="far fa-paper-plane"></i>
+                                                    <i class="fas fa-search"></i>
                                                 </button>
                                             </div>
                                         </div>
@@ -158,8 +152,8 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
                                                         </div>
 
                                                         <p class="small text-muted mb-0">You can upload jpg, gif or png files. <br> Max file size 3mb.</p>
-                                                        <input id="upload-chat-photo" class="d-none" type="file">
-                                                        <label class="stretched-label mb-0" for="upload-chat-photo"></label>
+                                                        <input id="photo" class="d-none" type="file">
+                                                        <label class="stretched-label mb-0" for="photo"></label>
                                                     </div>
                                                 </div>
 
@@ -235,84 +229,6 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
                         </div>
                     </div>
 
-                    <div class="tab-pane fade h-100" id="tab-content-friends" role="tabpanel">
-                        <div class="d-flex flex-column h-100">
-
-                            <div class="hide-scrollbar">
-                                <div class="container-fluid py-6">
-
-                                    <!-- Title -->
-                                    <h2 class="font-bold mb-6">User List</h2>
-                                    <!-- Title -->
-
-                                    <!-- Search -->
-                                    <form class="mb-6">
-                                        <div class="input-group">
-                                            <input type="text" class="form-control" placeholder="Search for messages or users..." aria-label="Search for messages or users...">
-                                            <div class="input-group-append">
-                                                <button class="btn btn-ico btn-secondary btn-minimal" type="submit">
-													<i class="far fa-paper-plane"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </form>
-                                    <!-- Search -->
-
-                                    <!-- Friends -->
-                                    <nav class="mb-n6">
-
-                                        <div class="mb-6">
-                                            <small class="text-uppercase">A</small>
-                                        </div>
-
-                                        <!-- Friend -->
-                                        <div class="card mb-6">
-                                            <div class="card-body">
-
-                                                <div class="media">
-                                                    
-                                                    <div class="avatar avatar-online mr-5">
-                                                        <img class="avatar-img" src="/files/profiles/<?php echo AuthComponent::user('User')['image'] ?>" alt="Anna Bridges">
-                                                    </div>
-                                                    
-                                                    
-                                                    <div class="media-body align-self-center">
-                                                        <h6 class="mb-0">Anna Bridges</h6>
-                                                        <small class="text-muted">Online</small>
-                                                    </div>
-
-                                                    <div class="align-self-center ml-5">
-                                                        <div class="dropdown z-index-max">
-                                                            <a href="#" class="btn btn-sm btn-ico btn-link text-muted w-auto" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                                <i class="fe-more-vertical"></i>
-                                                            </a>
-                                                            <div class="dropdown-menu">
-                                                                <a class="dropdown-item d-flex align-items-center" href="#">
-                                                                    New chat <span class="ml-auto fe-edit-2"></span>
-                                                                </a>
-                                                                <a class="dropdown-item d-flex align-items-center" href="#">
-                                                                    Delete <span class="ml-auto fe-trash-2"></span>
-                                                                </a>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <!-- Link -->
-                                                <a href="chat-2.html" class="stretched-link"></a>
-
-                                            </div>
-                                        </div>
-                                        <!-- Friend -->
-                                    </nav>
-                                    <!-- Friends -->
-
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-
                     <div class="tab-pane fade h-100 show active" id="tab-content-dialogs" role="tabpanel">
                         <div class="d-flex flex-column h-100">
 
@@ -320,7 +236,8 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
                                 <div class="container-fluid py-6">
 
                                     <!-- Title -->
-                                    <h2 class="font-bold mb-6">Chats</h2>
+                                    <h2 class="font-bold mb-6">Chats <a href="#" class="btn btn-primary btn-sm float-right m-0">New Message <i class="fas fa-location-arrow ml-2"></i></a></h2>
+                                    
                                     <!-- Title -->
 
                                     <!-- Search -->
@@ -329,7 +246,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
                                             <input type="text" class="form-control" placeholder="Search for messages or users..." aria-label="Search for messages or users...">
                                             <div class="input-group-append">
                                                 <button class="btn btn-ico btn-secondary btn-minimal" type="submit">
-													<i class="far fa-paper-plane"></i>
+                                                    <i class="fas fa-search"></i>
                                                 </button>
                                             </div>
                                         </div>
@@ -339,7 +256,14 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
                                     <!-- Chats -->
                                     <nav class="nav d-block list-discussions-js mb-n6">
                                         <!-- Chat link -->
-                                        <a class="text-reset nav-link p-0 mb-6" href="chat-1.html">
+                                        <?php 
+                                            $conversations = $this->Session->read('conversations')['conversations'];
+                                            if (empty($conversations)) {
+                                                echo '<div class="text-center"><small>No Conversations yet!</small></div>';
+                                            }
+                                        ?>
+                                        <?php foreach ($conversations as $key => $conversation) { ?>
+                                        <a class="text-reset nav-link p-0 mb-6" href="/chat/<?php echo $conversation['Conversation']['id'] ?>">
                                             <div class="card card-active-listener">
                                                 <div class="card-body">
 
@@ -347,28 +271,40 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
                                                         
                                                         
                                                         <div class="avatar mr-5">
-                                                            <img class="avatar-img" src="/files/profiles/<?php echo AuthComponent::user('User')['image'] ?>" alt="Bootstrap Themes">
+                                                            <img class="avatar-img" src="/files/profiles/<?php echo $conversation['Sender']['image'] ?>" alt="Bootstrap Themes">
                                                         </div>
                                                         
                                                         <div class="media-body overflow-hidden">
                                                             <div class="d-flex align-items-center mb-1">
-                                                                <h6 class="text-truncate mb-0 mr-auto">Bootstrap Themes</h6>
-                                                                <p class="small text-muted text-nowrap ml-4">10:42 am</p>
+                                                                <h6 class="text-truncate mb-0 mr-auto"><?php echo $conversation['Sender']['name'] ?></h6>
+                                                                <p class="small text-muted text-nowrap ml-4"><?php echo date_format(date_create($conversation['Message'][0]['created']), 'H:i A') ?></p>
                                                             </div>
-                                                            <div class="text-truncate">Anna Bridges: Hey, Maher! How are you? The weather is great isn't it?</div>
+                                                            <div class="text-truncate"><?php echo $conversation['Message'][count($conversation['Message'])-1]['User']['id'] == AuthComponent::user('User')['id'] ? 'You' : explode(" ", $conversation['Message'][count($conversation['Message'])-1]['User']['name'])[0] ?> : <?php echo $conversation['Message'][count($conversation['Message'])-1]['message'] ?></div>
                                                         </div>
                                                     </div>
-
                                                 </div>
 
+                                                <?php 
+                                                    // filter out messsages that is unred
+                                                    $unreadMessages = array_filter($conversation['Message'], function($value){
+                                                        return is_null($value['read']);
+                                                    });
+                                                    // count the unred messages to display on frontend
+                                                    $unreadCount = count($unreadMessages);
+                                                    // display badge if there are unred messages
+                                                    if(count($unreadMessages) > 0){
+                                                        echo "<div class=\"badge badge-circle badge-danger badge-border-light badge-top-right\">
+                                                                <span>{$unreadCount}</span>
+                                                            </div>";
+                                                    }
+
+                                                ?>
                                                 
-                                                <div class="badge badge-circle badge-primary badge-border-light badge-top-right">
-                                                    <span>3</span>
-                                                </div>
                                                 
                                             </div>
                                         </a>
                                         <!-- Chat link -->
+                                        <?php } ?>
                                     </nav>
                                     <!-- Chats -->
 
@@ -545,7 +481,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
                                             <input type="text" class="form-control" placeholder="Search for messages or users..." aria-label="Search for messages or users...">
                                             <div class="input-group-append">
                                                 <button class="btn btn-ico btn-secondary btn-minimal" type="submit">
-													<i class="far fa-paper-plane"></i>
+                                                    <i class="fas fa-search"></i>
                                                 </button>
                                             </div>
                                         </div>
@@ -636,9 +572,19 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
                                                     <div class="media align-items-center">
                                                         <div class="media-body">
                                                             <p class="small text-muted mb-0">Last Login Time</p>
-                                                            <p><?php echo AuthComponent::user('User')['last_login_time'] ?></p>
+                                                            <p><?php echo date_format(date_create(AuthComponent::user('User')['last_login_time']), 'H:i A') ?></p>
                                                         </div>
                                                         <i class="far fa-clock"></i>
+                                                    </div>
+                                                </li>
+
+                                                <li class="list-group-item px-0 py-6">
+                                                    <div class="media align-items-center">
+                                                        <div class="media-body">
+                                                            <p class="small text-muted mb-0">Joined</p>
+                                                            <p><?php echo date_format(date_create(AuthComponent::user('User')['created']), 'M d, Y') ?></p>
+                                                        </div>
+                                                        <i class="fas fa-sign-in-alt"></i>
                                                     </div>
                                                 </li>
                                             </ul>
@@ -656,10 +602,6 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
                             </div>
 
                         </div>
-
-
-
-
                     </div>
                 </div>
             </div>
@@ -680,87 +622,6 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
         </div>
         <!-- Layout -->
 
-        <!-- DropzoneJS: Template -->
-        <div id="dropzone-template-js">
-            <div class="col-lg-6 my-3">
-                <div class="card bg-light">
-                    <div class="card-body p-3">
-                        <div class="media align-items-center">
-
-                            <div class="dropzone-file-preview">
-                                <div class="avatar avatar rounded bg-secondary text-basic-inverse d-block mr-5">
-                                    <i class="fe-paperclip"></i>
-                                </div>
-                            </div>
-
-                            <div class="dropzone-image-preview">
-                                <div class="avatar avatar mr-5">
-                                    <img src="#" class="avatar-img rounded" data-dz-thumbnail="" alt="">
-                                </div>
-                            </div>
-
-                            <div class="media-body overflow-hidden">
-                                <h6 class="text-truncate small mb-0" data-dz-name></h6>
-                                <p class="extra-small" data-dz-size></p>
-                            </div>
-
-                            <div class="ml-5">
-                                <a href="#" class="btn btn-sm btn-link text-decoration-none text-muted" data-dz-remove>
-                                    <i class="fe-x"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- DropzoneJS: Template -->
-
-        <!-- Modal: Invite friends -->
-        <div class="modal fade" id="invite-friends" tabindex="-1" role="dialog" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-
-                    <div class="modal-header">
-                        <div class="media flex-fill">
-                            <div class="icon-shape rounded-lg bg-primary text-white mr-5">
-                                <i class="fe-users"></i>
-                            </div>
-                            <div class="media-body align-self-center">
-                                <h5 class="modal-title">Invite friends</h5>
-                                <p>Invite colleagues, clients and friends.</p>
-                            </div>
-                        </div>
-
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-
-                    <div class="modal-body">
-                        <form action="#">
-                            <div class="form-group">
-                                <label for="invite-email" class="small">Email</label>
-                                <input type="text" class="form-control" id="invite-email">
-                            </div>
-
-                            <div class="form-group mb-0">
-                                <label for="invite-message" class="small">Invitation message</label>
-                                <textarea class="form-control" id="invite-message" data-autosize="true"></textarea>
-                            </div>
-                        </form>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-block btn-primary d-flex align-items-center">
-                            Invite friend
-                            <i class="fe-user-plus ml-auto"></i>
-                        </button>
-                    </div>
-
-                </div>
-            </div>
-        </div>
 		<!-- <div id="footer">
 			<?php echo $this->Html->link(
 					$this->Html->image('cake.power.gif', array('alt' => $cakeDescription, 'border' => '0')),

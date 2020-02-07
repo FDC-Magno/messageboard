@@ -1,75 +1,212 @@
-<div class="conversations view">
-<h2><?php echo __('Conversation'); ?></h2>
-	<dl>
-		<dt><?php echo __('Id'); ?></dt>
-		<dd>
-			<?php echo h($conversation['Conversation']['id']); ?>
-			&nbsp;
-		</dd>
-		<dt><?php echo __('Created'); ?></dt>
-		<dd>
-			<?php echo h($conversation['Conversation']['created']); ?>
-			&nbsp;
-		</dd>
-		<dt><?php echo __('Modified'); ?></dt>
-		<dd>
-			<?php echo h($conversation['Conversation']['modified']); ?>
-			&nbsp;
-		</dd>
-		<dt><?php echo __('Receiver'); ?></dt>
-		<dd>
-			<?php echo $this->Html->link($conversation['Receiver']['name'], array('controller' => 'users', 'action' => 'view', $conversation['Receiver']['id'])); ?>
-			&nbsp;
-		</dd>
-	</dl>
-</div>
-<div class="actions">
-	<h3><?php echo __('Actions'); ?></h3>
-	<ul>
-		<li><?php echo $this->Html->link(__('Edit Conversation'), array('action' => 'edit', $conversation['Conversation']['id'])); ?> </li>
-		<li><?php echo $this->Form->postLink(__('Delete Conversation'), array('action' => 'delete', $conversation['Conversation']['id']), array('confirm' => __('Are you sure you want to delete # %s?', $conversation['Conversation']['id']))); ?> </li>
-		<li><?php echo $this->Html->link(__('List Conversations'), array('action' => 'index')); ?> </li>
-		<li><?php echo $this->Html->link(__('New Conversation'), array('action' => 'add')); ?> </li>
-		<li><?php echo $this->Html->link(__('List Users'), array('controller' => 'users', 'action' => 'index')); ?> </li>
-		<li><?php echo $this->Html->link(__('New Receiver'), array('controller' => 'users', 'action' => 'add')); ?> </li>
-		<li><?php echo $this->Html->link(__('List Messages'), array('controller' => 'messages', 'action' => 'index')); ?> </li>
-		<li><?php echo $this->Html->link(__('New Message'), array('controller' => 'messages', 'action' => 'add')); ?> </li>
-	</ul>
-</div>
-<div class="related">
-	<h3><?php echo __('Related Messages'); ?></h3>
-	<?php if (!empty($conversation['Message'])): ?>
-	<table cellpadding = "0" cellspacing = "0">
-	<tr>
-		<th><?php echo __('Id'); ?></th>
-		<th><?php echo __('User Id'); ?></th>
-		<th><?php echo __('Conversation Id'); ?></th>
-		<th><?php echo __('Message'); ?></th>
-		<th><?php echo __('Created'); ?></th>
-		<th><?php echo __('Modified'); ?></th>
-		<th class="actions"><?php echo __('Actions'); ?></th>
-	</tr>
-	<?php foreach ($conversation['Message'] as $message): ?>
-		<tr>
-			<td><?php echo $message['id']; ?></td>
-			<td><?php echo $message['user_id']; ?></td>
-			<td><?php echo $message['conversation_id']; ?></td>
-			<td><?php echo $message['message']; ?></td>
-			<td><?php echo $message['created']; ?></td>
-			<td><?php echo $message['modified']; ?></td>
-			<td class="actions">
-				<?php echo $this->Html->link(__('View'), array('controller' => 'messages', 'action' => 'view', $message['id'])); ?>
-				<?php echo $this->Html->link(__('Edit'), array('controller' => 'messages', 'action' => 'edit', $message['id'])); ?>
-				<?php echo $this->Form->postLink(__('Delete'), array('controller' => 'messages', 'action' => 'delete', $message['id']), array('confirm' => __('Are you sure you want to delete # %s?', $message['id']))); ?>
-			</td>
-		</tr>
-	<?php endforeach; ?>
-	</table>
-<?php endif; ?>
 
-	<div class="actions">
-		<ul>
-			<li><?php echo $this->Html->link(__('New Message'), array('controller' => 'messages', 'action' => 'add')); ?> </li>
-		</ul>
+<!-- Main Content -->
+<div class="main main-visible" data-mobile-height="">
+
+	<!-- Chat -->
+	<div id="chat-1" class="chat dropzone-form-js" data-dz-url="some.php">
+
+		<!-- Chat: body -->
+		<div class="chat-body">
+
+			<!-- Chat: Header -->
+			<div class="chat-header border-bottom py-4 py-lg-7">
+				<div class="container">
+
+					<div class="row align-items-center">
+
+						<!-- Close chat(mobile) -->
+						<div class="col-3 d-lg-none">
+							<ul class="list-inline mb-0">
+								<li class="list-inline-item">
+									<a class="text-muted px-0" href="#" data-chat="open">
+										<i class="icon-md fe-chevron-left"></i>
+									</a>
+								</li>
+							</ul>
+						</div>
+
+						<!-- Chat photo -->
+						<div class="col-6 col-lg-6">
+							<div class="media text-center text-lg-left">
+								<div class="avatar avatar-sm d-none d-lg-inline-block mr-5">
+									<img src="/files/profiles/<?php echo $conversation['Sender']['image'] ?>" class="avatar-img" alt="">
+								</div>
+
+								<div class="media-body align-self-center">
+									<h6 class="mb-n2"><?php echo $conversation['Sender']['name'] ?></h6>
+									<small class="text-muted">Last Log in Time: <?php echo date_format(date_create($conversation['Sender']['last_login_time']), 'H:i A'); ?></small>
+								</div>
+							</div>
+						</div>
+
+						<!-- Chat toolbar -->
+						<div class="col-3 col-lg-6 text-right">
+							<ul class="nav justify-content-end">
+
+								<!-- Mobile nav -->
+								<li class="nav-item list-inline-item d-block d-lg-none">
+									<div class="dropdown">
+										<a class="nav-link text-muted px-0" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+											<i class="icon-md fe-more-vertical"></i>
+										</a>
+										<div class="dropdown-menu">
+											<a class="dropdown-item d-flex align-items-center" href="#" data-chat-sidebar-toggle="#chat-1-info">
+												Chat Info <span class="ml-auto pl-5 fe-more-horizontal"></span>
+											</a>
+											<a class="dropdown-item d-flex align-items-center" href="#" data-chat-sidebar-toggle="#chat-1-members">
+												Add Members <span class="ml-auto pl-5 fe-user-plus"></span>
+											</a>
+										</div>
+									</div>
+								</li>
+								<!-- Mobile nav -->
+							</ul>
+						</div>
+
+					</div><!-- .row -->
+
+				</div>
+			</div>
+			<!-- Chat: Header -->
+
+			<!-- Chat: Content-->
+			<div class="chat-content">
+				<div class="container py-6 py-lg-9" id="chat-container">
+					<?php 
+						foreach ($conversation['Message'] as $key => $message) {
+							$created = date_format(date_create($message['created']), 'h:i A');
+							if ($message['user_id'] == AuthComponent::user('User')['id']) {
+								echo "<div class='message message-right'>
+					
+											<!-- Avatar -->
+											<a class='avatar avatar-sm mr-4 mr-lg-5' href='#' data-chat-sidebar-toggle='#chat-1-user-profile'>
+												<img class='avatar-img' src='/files/profiles/{$conversation['Receiver']['image']}'>
+											</a>
+					
+											<div class='message-body'>
+												<div class='message-content bg-primary text-white'>
+													<p>{$message['message']}</p>
+												</div>
+					
+												<div class='message-footer'>
+													<small class='text-muted'>{$created}</small>
+												</div>
+											</div>
+										</div>";
+							}
+							else{
+								echo "<div class='message'>
+					
+											<!-- Avatar -->
+											<a class='avatar avatar-sm mr-4 mr-lg-5' href='#' data-chat-sidebar-toggle='#chat-1-user-profile'>
+												<img class='avatar-img' src='/files/profiles/{$conversation['Sender']['image']}'>
+											</a>
+					
+											<div class='message-body'>
+												<div class='message-content bg-light'>
+													<p>{$message['message']}</p>
+												</div>
+					
+												<div class='message-footer'>
+													<small class='text-muted'>{$created}</small>
+												</div>
+											</div>
+										</div>";
+							}
+						}
+					?>
+				</div>
+
+				<!-- Scroll to end -->
+				<div class="end-of-chat"></div>
+			</div>
+			<!-- Chat: Content -->
+
+			<!-- Chat: Footer -->
+			<div class="chat-footer border-top py-4 py-lg-7">
+				<div class="container">
+
+					<form id="chat-form" data-emoji-form="">
+						<input type="hidden" name="_method" value="POST">
+						<div class="input-group">
+
+							<!-- Textarea -->
+							<textarea id="message" name="message" class="form-control" placeholder="Type your message..." rows="1" data-emoji-input="" data-autosize="true"></textarea>
+
+							<!-- Emoji button -->
+							<div class="input-group-append mr-n4">
+								<button class="btn btn-ico btn-secondary btn-minimal" type="button" data-emoji-btn="">
+									<i class="far fa-smile"></i>
+								</button>
+							</div>
+
+							<!-- Submit button -->
+							<div class="input-group-append">
+								<button class="btn btn-ico btn-secondary btn-minimal" type="submit">
+									<i class="far fa-paper-plane"></i>
+								</button>
+							</div>
+
+						</div>
+					</form>
+
+				</div>
+			</div>
+			<!-- Chat: Footer -->
+		</div>
+		<!-- Chat: body -->
 	</div>
+	<!-- Chat -->
+
 </div>
+<!-- Main Content -->
+<?php $this->start('script'); ?>
+<script>
+	$(function(){
+		$('#chat-form').submit(function (e) { 
+			e.preventDefault()
+			let data = {
+				message: $('#message').val(),
+				user_id: <?php echo AuthComponent::user('User')['id']; ?>,
+				conversation_id: <?php echo $conversation['Conversation']['id']; ?>
+			}
+			// console.log(data)
+			/**
+			 * TODO: Finish created time format
+			 */
+			$.ajax({
+				type: "post",
+				accepts: {
+					json: 'application/json'
+				},
+				dataType: 'json',
+				url: "/chat/<?php echo $conversation['Conversation']['id'] ?>/add",
+				data: data,
+				success: function (response) {
+					let date = new Date(response.Message.created)
+					console.log(date.getTime())
+					let created = `${date.getHours()}:${date.getMinutes()}`
+					console.log(response)
+					let content = `<div class='message message-right'>
+											<!-- Avatar -->
+											<a class='avatar avatar-sm mr-4 mr-lg-5' href='#' data-chat-sidebar-toggle='#chat-1-user-profile'>
+												<img class='avatar-img' src='/files/profiles/<?php echo AuthComponent::user('User')['image'] ?>'>
+											</a>
+					
+											<div class='message-body'>
+												<div class='message-content bg-primary text-white'>
+													<p>${response.Message.message}</p>
+												</div>
+					
+												<div class='message-footer'>
+													<small class='text-muted'>${created}</small>
+												</div>
+											</div>
+										</div>`
+					$('#chat-container').append(content);
+				}
+			});
+		});
+	})
+</script>
+<?php $this->end(); ?>

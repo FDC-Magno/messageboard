@@ -23,6 +23,13 @@ class Conversation extends AppModel {
 			'conditions' => '',
 			'fields' => '',
 			'order' => ''
+		),
+		'Sender' => array(
+			'className' => 'User',
+			'foreignKey' => 'sender_id',
+			'conditions' => '',
+			'fields' => '',
+			'order' => ''
 		)
 	);
 
@@ -46,5 +53,4 @@ class Conversation extends AppModel {
 			'counterQuery' => ''
 		)
 	);
-
 }

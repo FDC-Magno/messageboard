@@ -16,10 +16,6 @@ class UsersController extends AppController {
 		$this->Auth->allow('add', 'signup', 'index');
 	}
 
-	public $components = array(
-		'RequestHandler'
-	);
-
 	public function signup()
 	{
 		// set the signup's layout to user.ctp
@@ -64,17 +60,33 @@ class UsersController extends AppController {
 			));
 			//log user in if user data is available
 			if ($user) {
-				$this->Auth->login($user);
-				$this->Flash->success(__('You have successfully logged in.'));
-                return $this->redirect(array('action' => 'welcome'));
+				if($this->Auth->login($user)){ 
+					$this->updateLoginFields();
+					$this->Flash->success(__('You have successfully logged in.'));
+					return $this->redirect(array('action' => 'welcome'));
+				}
 			}else{
 				return $this->Flash->error(__('Invalid email or password.'));
 			}
 		}
 	}
 
-	public function welcome(){
+	//update last login time field when user logs in
+	protected function updateLoginFields(){
+        $this->User->id = $this->Auth->user('User')['id'];
+        $this->User->read();
+        $this->User->data['User']['last_login_time'] = date('Y-m-d H:i:s');
+        $this->User->save($this->User->data, false);
+    }
 
+	/**
+	 * TODO: Get sender data and receiver data from the current user's conversation
+	 */
+	public function welcome(){
+		
+		$conversations = $this->User->Conversation->find('all', array('recursive' => '2', 'conditions' => array('Conversation.receiver_id' => $this->Auth->user('User')['id'])));
+		// var_dump($this->Auth->user('User')['id']);
+		$this->Session->write('conversations', compact('conversations'));
 	}
 
 	public function logout()
@@ -90,9 +102,6 @@ class UsersController extends AppController {
 		}
 	}
 
-	/**
-	 * TODO: File upload and page redirection
-	 */
 	public function edit(){
 		//set layout as false to unset default CakePHP layout. This is to prevent our JSON response from mixing with HTML
 		$this->layout = false; 
@@ -111,32 +120,21 @@ class UsersController extends AppController {
 				$finalData = array_merge($user['User'], $data);
 				$this->User->id = $data['id'];
 				$finalData['image'] = $data['image']['name'];
-				// var_dump($data);
-				var_dump($finalData);
-				// var_dump($this->User->id);
-				// var_dump($this->User->validationErrors);
 				if($this->User->save($finalData)){
 					$this->Auth->login($this->User->read(null, $this->Auth->User('id')));
 					move_uploaded_file($data['image']['tmp_name'], $directory.$finalData['image']);
-					$response = array('status'=>'success','message'=>'Profile successfully updated');
+					$this->Flash->success(__('Profile successfully updated'));
+					return $this->redirect(array('action' => 'welcome'));
 				} else {
-					$response['message'] = "Failed to update Profile";
+					$this->Flash->error(__('Failed to update Profile'));
 				}
 			} else {
-				$response['message'] = 'Please provide user ID';
+				$this->Flash->error(__('Please provide user ID'));
 			}
 		}
 			
 		$this->response->type('application/json');
 		$this->response->body(json_encode($response));
-		return $this->response->send();
-	}
-
-	public function index(){
-		$this->layout = false;
-		$user = $this->User->find('all');
-		$this->response->type('application/json');
-		$this->response->body(json_encode($user));
 		return $this->response->send();
 	}
 }
