@@ -80,10 +80,9 @@ class UsersController extends AppController {
     }
 
 	/**
-	 * TODO: Get sender data and receiver data from the current user's conversation
+	 * FIXED: Get sender data and receiver data from the current user's conversation
 	 */
 	public function welcome(){
-		
 		$conversations = $this->User->Conversation->find('all', array('recursive' => '2', 'conditions' => array('Conversation.receiver_id' => $this->Auth->user('User')['id'])));
 		// var_dump($this->Auth->user('User')['id']);
 		$this->Session->write('conversations', compact('conversations'));
@@ -103,8 +102,8 @@ class UsersController extends AppController {
 	}
 
 	public function edit(){
-		//set layout as false to unset default CakePHP layout. This is to prevent our JSON response from mixing with HTML
-		$this->layout = false; 
+		//set autoRender as false to unset default CakePHP layout. This is to prevent our JSON response from mixing with HTML
+		$this->autoRender = false; 
 		$directory = WWW_ROOT.DS."files".DS."profiles".DS;
 		//set default response
 		$response = array('status'=>'failed', 'message'=>'HTTP method not allowed');

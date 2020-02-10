@@ -26,6 +26,13 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 		<?php echo $this->fetch('title'); ?>
 	</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1, shrink-to-fit=no">
+    <script>
+        function getIndex(e, index){
+            e.preventDefault()
+            document.cookie = `${index}`
+            location.href = event.currentTarget.getAttribute('href')
+        }
+    </script>
 	<?php
 		echo $this->Html->meta('icon', '/img/logo.png');
 		echo $this->Html->css('style.css');
@@ -82,7 +89,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
                     <!-- Profile: Hidden on lg -->
                     <li class="nav-item mt-lg-8 d-block d-lg-none">
                         <a class="nav-link position-relative p-0 py-2" data-toggle="tab" href="#tab-content-user" title="User" role="tab">
-                            <i class="icon-lg fe-user"></i>
+                            <i class="fa fa-user fa-2x"></i>
                         </a>
                     </li>
 
@@ -254,7 +261,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
                                     <!-- Search -->
 
                                     <!-- Chats -->
-                                    <nav class="nav d-block list-discussions-js mb-n6">
+                                    <nav class="nav d-block list-discussions-js mb-n6" id="conversation-container">
                                         <!-- Chat link -->
                                         <?php 
                                             $conversations = $this->Session->read('conversations')['conversations'];
@@ -263,13 +270,11 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
                                             }
                                         ?>
                                         <?php foreach ($conversations as $key => $conversation) { ?>
-                                        <a class="text-reset nav-link p-0 mb-6" href="/chat/<?php echo $conversation['Conversation']['id'] ?>">
+                                        <a class="text-reset nav-link p-0 mb-6" onclick="getIndex(event, <?php echo $key ?>)" href="/chat/<?php echo $conversation['Conversation']['id'] ?>">
                                             <div class="card card-active-listener">
                                                 <div class="card-body">
-
                                                     <div class="media">
-                                                        
-                                                        
+                                                    
                                                         <div class="avatar mr-5">
                                                             <img class="avatar-img" src="/files/profiles/<?php echo $conversation['Sender']['image'] ?>" alt="Bootstrap Themes">
                                                         </div>
@@ -287,7 +292,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
                                                 <?php 
                                                     // filter out messsages that is unred
                                                     $unreadMessages = array_filter($conversation['Message'], function($value){
-                                                        return is_null($value['read']);
+                                                        return is_null($value['read']) && $value['user_id'] != AuthComponent::user('User')['id']; 
                                                     });
                                                     // count the unred messages to display on frontend
                                                     $unreadCount = count($unreadMessages);
@@ -608,7 +613,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
             <!-- Sidebar -->
 
             <!-- Main Content -->
-            <div class="main" data-mobile-height="">
+            <div class="main" data-mobile-height>
 				
 				<!-- Render Views Here -->				
 					<?php echo $this->Flash->render(); ?>
@@ -635,27 +640,5 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 		</div> -->
 	</div>
     <?php echo $this->element('sql_dump'); ?>
-    <script>
-        $(function(){
-            $('#profile-edit-submit').click(function (e) { 
-                e.preventDefault()
-                console.log($('#profile-form')[0])
-                let id = $('#profile-id').val();
-                $.ajax({
-                    url: `/users/edit/${id}`,
-                    type: 'put',
-                    dataType: 'json',
-                    data: $('#profile-form').serialize(),
-                    success: function(data) {
-                        console.log(data)
-                    },
-                    error: function(error){
-                        console.log(error)
-                    }
-                });
-            });
-            
-        })
-    </script>
 </body>
 </html>

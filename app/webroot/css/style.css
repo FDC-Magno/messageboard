@@ -17,3 +17,13 @@ form .error-message{
     color: red;
     font-size: 14px;
 }
+
+.message{
+    position:relative;
+}
+
+#dropdown-message-right{
+    position: absolute;
+    left: 96%;
+    bottom: 55%;
+}
