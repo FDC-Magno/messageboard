@@ -16,21 +16,35 @@ class UsersController extends AppController {
 		$this->Auth->allow('add', 'signup', 'index');
 	}
 
+	public function index(){
+		$this->autoRender = false;
+		$users = $this->User->find('all', array(
+			'conditions' => array(
+				'User.name LIKE' => "{$this->request->query['search']}%",
+				'User.id !=' => AuthComponent::user('User')['id']
+			),
+			'recursive' => -1
+		));
+		$users = Set::extract('/User/.', $users);
+		return json_encode($users);
+	}
+
 	public function signup()
 	{
 		// set the signup's layout to user.ctp
 		$this->layout = 'user';
 		$destination = WWW_ROOT.DS."files".DS."profiles".DS;
 		// check if request is post
+		Debugger::log($this->request->data);
 		if ($this->request->is('post')) {
 			$this->User->create();
 			// store the whole image data in the $image variable first to prevent overwrite
-			$image = $this->request->data['User']['image'];
-			$this->request->data['User']['image'] = $this->request->data['User']['image']['name'];
+			$image = $this->request->data['image'];
+			$this->request->data['image'] = $this->request->data['image']['name'];
 
-			$this->request->data['User']['email'] = $this->request->data('email');
-			$this->request->data['User']['created_ip'] = $this->RequestHandler->getClientIp();
-			$this->request->data['User']['modified_ip'] = $this->RequestHandler->getClientIp();
+			$this->request->data['email'] = $this->request->data('email');
+			$this->request->data['created_ip'] = $this->RequestHandler->getClientIp();
+			$this->request->data['modified_ip'] = $this->RequestHandler->getClientIp();
             if ($this->User->save($this->request->data)) {
 				// move the uploaded file to profiles folder inside files folder
 				move_uploaded_file($image['tmp_name'], $destination . "" . $image['name']);
@@ -54,9 +68,10 @@ class UsersController extends AppController {
 			// find a matching user with the request data
 			$user = $this->User->find('first', array(
 				'conditions' => array(
-					'User.email' => $this->request->data['Users']['email'],
-					'User.password' => AuthComponent::password($this->request->data['Users']['password'])
-				)
+					'User.email' => $this->request->data['email'],
+					'User.password' => AuthComponent::password($this->request->data['password'])
+				),
+				'recursive' => -1
 			));
 			//log user in if user data is available
 			if ($user) {
@@ -83,9 +98,21 @@ class UsersController extends AppController {
 	 * FIXED: Get sender data and receiver data from the current user's conversation
 	 */
 	public function welcome(){
-		$conversations = $this->User->Conversation->find('all', array('recursive' => '2', 'conditions' => array('Conversation.receiver_id' => $this->Auth->user('User')['id'])));
-		// var_dump($this->Auth->user('User')['id']);
+		$conversations = $this->User->Conversation->find('all', array('recursive' => '2', 'conditions' => array('Conversation.sender_id' => $this->Auth->user('User')['id'])));
 		$this->Session->write('conversations', compact('conversations'));
+	}
+
+	public function editPassword(){
+		$this->autoRender = false;
+		if ($this->request->is('post')) {
+			if($this->Auth->user('User')['password'] == AuthComponent::password($this->request->data['current-password'])){
+				$this->User->id = $this->Auth->user('User')['id'];
+				if($this->User->saveField('password', AuthComponent::password($this->request->data['password']))){
+					$this->Flash->success('Password successfully changed');
+					return $this->redirect('/');
+				}
+			}
+		}
 	}
 
 	public function logout()
@@ -101,27 +128,31 @@ class UsersController extends AppController {
 		}
 	}
 
+	/**
+	 * FIXED(02-11-2020): use user image if the image data field is empty or it is equal to user's image 
+	 */
 	public function edit(){
 		//set autoRender as false to unset default CakePHP layout. This is to prevent our JSON response from mixing with HTML
 		$this->autoRender = false; 
 		$directory = WWW_ROOT.DS."files".DS."profiles".DS;
-		//set default response
-		$response = array('status'=>'failed', 'message'=>'HTTP method not allowed');
-		
 		//check if HTTP method is correct for edit
 		if($this->request->is('post')){
 			//get data from request object
 			$data = $this->request->data;			
 			//check if product ID was provided
 			if(!empty($data['id'])){
-				//set the product ID to update
+				$this->User->recursive = -1;
 				$user = $this->User->findById($data['id']);
 				$finalData = array_merge($user['User'], $data);
+				//set the user ID to update
 				$this->User->id = $data['id'];
-				$finalData['image'] = $data['image']['name'];
+				$finalData['image'] = $data['image']['name'] == $user['User']['image'] || $data['image']['name'] == '' ? $user['User']['image'] : $data['image']['name'];
+				Debugger::log($data['image']['name'] == '');
 				if($this->User->save($finalData)){
 					$this->Auth->login($this->User->read(null, $this->Auth->User('id')));
-					move_uploaded_file($data['image']['tmp_name'], $directory.$finalData['image']);
+					if ($finalData['image'] != $user['User']['image']) {
+						move_uploaded_file($data['image']['tmp_name'], $directory.$finalData['image']);
+					}
 					$this->Flash->success(__('Profile successfully updated'));
 					return $this->redirect(array('action' => 'welcome'));
 				} else {
@@ -131,9 +162,5 @@ class UsersController extends AppController {
 				$this->Flash->error(__('Please provide user ID'));
 			}
 		}
-			
-		$this->response->type('application/json');
-		$this->response->body(json_encode($response));
-		return $this->response->send();
 	}
 }

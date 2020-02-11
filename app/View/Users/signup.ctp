@@ -7,50 +7,66 @@
 	<p class="text-center mb-6">Welcome to the official Chat web-client.</p>
 
 	<!-- Form -->
-	<?php echo $this->Form->create('User', array('class' => 'mb-6', 'type' => 'file')); ?>
-		<input type="hidden" name="data[User][id]" id="UserId">
+	<?php echo $this->Form->create(false, array('class' => 'mb-6', 'type' => 'file', 'url' => '/signup')); ?>
 		<div class="form-group input text">
-			<label class="small">Photo</label>
+			<!-- <label class="small">Image</label> -->
 			<div class="position-relative text-center bg-secondary rounded p-6">
 				<div class="avatar bg-primary text-white mb-5 pt-5">
 					<i class="far fa-image fa-lg"></i>
 				</div>
 
 				<p class="small text-muted mb-0">You can upload jpg, gif or png files. <br> Max file size 3mb.</p>
-				<?php echo $this->Form->input('image', array('class' => 'd-none', 'id' => 'upload-chat-photo', 'type' => 'file', 'label' => '')); ?>
-				<label class="stretched-label mb-0" for="upload-chat-photo"></label>
+				<input type="file" name="data[image]" id="image" class="d-none" label=''>
+				<label class="stretched-label mb-0" for="image"></label>
 			</div>
 		</div>
 		<!-- Name -->
-		<?php echo $this->Form->input('name', array('class' => 'form-control mt-0', 'label' => '', 'placeholder' => 'Enter full name')); ?>
-
-		<!-- Email -->
-		<input type="email" name="email" id="email" class="form-control mt-5" placeholder="Enter Email" value="<?php print_r($this->request->data('email')); ?>">
-
-		<!-- Password -->
-		<?php echo $this->Form->input('password', array('class' => 'form-control', 'label' => '', 'placeholder' => 'Enter Password')); ?>
-
-		<!-- Password Confirm-->
-		<?php echo $this->Form->input('password_confirm', array('class' => 'form-control mb-5', 'label' => '', 'placeholder' => 'Confirm Password', 'type' => 'password')); ?>
-
-		<!-- gender -->
-		<div class="form-group input text">
-			<label for="UserBirthdate" class="sr-only">Birthdate</label>
-			<?php echo $this->Form->input('birthdate', array('type' => 'date', 'class' => 'form-control')); ?>
+		<div class="form-group">
+			<label for="name" class="sr-only">Name</label>
+			<input type="text" name="name" id="name" class="form-control" placeholder="Enter Fullname" value="<?php echo $this->request->data('name'); ?>">
 		</div>
 
+		<!-- Email -->
+		<div class="form-group">
+			<label for="email" class="sr-only">Email</label>
+			<input type="email" name="email" id="email" class="form-control" placeholder="Enter Email" value="<?php echo $this->request->data('email'); ?>">
+		</div>
+
+		<!-- Password -->
+		<div class="form-group">
+			<label for="password" class="sr-only">Password</label>
+			<input type="password" name="password" id="password" class="form-control" placeholder="Enter Password">
+		</div>
+
+		<!-- Password Confirm-->
+		<div class="form-group">
+			<label for="password_confirm" class="sr-only">Confirm Password</label>
+			<input type="password" name="password_confirm" id="password_confirm" class="form-control" placeholder="Confirm Password">
+		</div>
+
+		<!-- Birthdate -->
+		<div class="form-group">
+			<label for="birthdate" class="sr-only">Birthdate</label>
+			<input type="text" name="birthdate" id="birthdate" class="form-control datepicker" placeholder="Enter Birthdate" value="<?php echo $this->request->data('email'); ?>">
+		</div>
+
+		<!-- FIXME: give fields their respective default values -->
 		<!-- Gender -->
-		<?php echo $this->Form->input('gender', array('class' => 'form-control', 'options' => array('m' => 'Male', 'f' => 'Female', 'o' => 'Others'))); ?>
+		<div class="form-group">
+			<label for="gender" class="sr-only">Gender</label>
+			<select name="gender" id="gender" class="form-control">
+				<option value="<?php echo $this->request->data('gender'); ?>" selected hidden><?php echo $this->request->data('gender') ?></option>
+				<option value="m">Male</option>
+				<option value="f">Female</option>
+				<option value="o">Others</option>
+			</select>
+		</div>
 
 		<!-- Hubby -->
-		<?php echo $this->Form->input('hubby', array('class' => 'form-control mb-5', 'label' => '', 'placeholder' => 'Enter your Hubby here')); ?>
-
-		<!-- Hidden inputs -->
-			<!-- Last Login Time -->
-			<?php 
-				$lastLoginDate = date('Y-m-d H:i:s');
-				echo $this->Form->input('last_login_time', array('type' => 'hidden', 'value' => $lastLoginDate)); 
-			?>
+		<div class="form-group">
+			<label for="hubby" class="sr-only">Hubby</label>
+			<textarea name="hubby" id="hubby" class="form-control" placeholder="" rows="6">Enter you hubby here</textarea>
+		</div>
 
 		<!-- Submit -->
 		<?php echo $this->Form->end(array('class' => 'btn btn-block btn-primary', 'label' => 'Signup')); ?>

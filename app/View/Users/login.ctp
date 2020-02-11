@@ -5,14 +5,21 @@
 
     <!-- Text -->
     <p class="text-center mb-6">Welcome to the official Chat web-client.</p>
-
+    
+    <!-- FIXME: give fields their respective default values -->
     <!-- Form -->
-    <?php echo $this->Form->create('Users') ?>
+    <?php echo $this->Form->create(false, array('url' => '/login')) ?>
         <!-- Email -->
-        <?php echo $this->Form->input('email', array('class' => 'form-control', 'label' => '', 'placeholder' => 'Enter E-mail')); ?>
+        <div class="form-group">
+            <label for="email" class="sr-only">Email Address</label>
+            <input type="email" name="email" class="form-control" id="email" placeholder="Enter your email" value="<?php echo !empty($this->request->data['email']); ?>">
+        </div>
 
         <!-- Password -->
-        <?php echo $this->Form->input('password', array('class' => 'form-control mb-5', 'label' => '', 'placeholder' => 'Enter password')); ?>
+        <div class="form-group">
+            <label for="password" class="sr-only">Password</label>
+            <input type="password" name="password" class="form-control" id="password" placeholder="Enter your password">
+        </div>
 
         <div class="form-group d-flex justify-content-between">
             <div class="custom-control custom-checkbox">

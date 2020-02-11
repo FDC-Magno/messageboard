@@ -27,3 +27,21 @@ form .error-message{
     left: 96%;
     bottom: 55%;
 }
+
+#dropdown{
+    position: relative;
+}
+
+#dropdown-menu{
+    z-index: 100000;
+    position: absolute;
+    margin: 35% 0% 0% 29%;
+}
+
+.dropdown-menu .show{
+    z-index: 100000;
+}
+
+.search{
+    width: 100%;
+}

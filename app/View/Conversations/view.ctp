@@ -1,6 +1,9 @@
 <!-- TODO: redirect if there are no messages -->
 <!-- Chat -->
 <div id="chat-1" class="chat dropzone-form-js" data-dz-url="some.php">
+<?php
+	$index = count($conversation['Message']) - 1;
+?>
 	<!-- Chat: body -->
 	<div class="chat-body">
 
@@ -25,12 +28,12 @@
 					<div class="col-6 col-lg-6">
 						<div class="media text-center text-lg-left">
 							<div class="avatar avatar-sm d-none d-lg-inline-block mr-5">
-								<img src="/files/profiles/<?php echo $conversation['Sender']['image'] ?>" class="avatar-img" alt="">
+								<img src="/files/profiles/<?php echo $conversation['Receiver']['image'] ?>" class="avatar-img" alt="">
 							</div>
 
 							<div class="media-body align-self-center">
-								<h6 class="mb-n2"><?php echo $conversation['Sender']['name'] ?></h6>
-								<small class="text-muted">Last Log in Time: <?php echo date_format(date_create($conversation['Sender']['last_login_time']), 'H:i A'); ?></small>
+								<h6 class="mb-n2"><?php echo $conversation['Receiver']['name'] ?></h6>
+								<small class="text-muted">Last Log in Time: <?php echo date_format(date_create($conversation['Receiver']['last_login_time']), 'H:i A'); ?></small>
 							</div>
 						</div>
 					</div>
@@ -79,13 +82,13 @@
 					foreach ($conversation['Message'] as $key => $message) {
 						$created = date_format(date_create($message['created']), 'h:i A');
 						if ($message['user_id'] == AuthComponent::user('User')['id']) {
-							echo "<div class='message message-right'>
+							echo "<div class='message message-right message-{$key}'>
 										<div class='dropdown' id='dropdown-message-right'>
 											<a class='nav-link text-muted px-0' href='#' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
 												<i class='fas fa-ellipsis-v'></i>
 											</a>
 											<div class='dropdown-menu'>
-												<a class='dropdown-item d-flex align-items-center' id='deleteConversationBtn' href='#'>
+												<a class='dropdown-item d-flex align-items-center' onclick='deleteMessage(event, {$key}, {$message['id']})' href='#'>
 													Delete
 													<i class='far fa-trash-alt ml-auto'></i>
 												</a>
@@ -93,7 +96,7 @@
 										</div>
 										<!-- Avatar -->
 										<a class='avatar avatar-sm mr-4 mr-lg-5' href='#'>
-											<img class='avatar-img' src='/files/profiles/{$conversation['Receiver']['image']}'>
+											<img class='avatar-img' src='/files/profiles/{$conversation['Sender']['image']}'>
 										</a>
 
 										<div class='message-body'>
@@ -163,6 +166,7 @@
 <!-- Chat -->
 <?php $this->start('script'); ?>
 <script>
+	window.index = <?php echo $index; ?>;
 	$(function(){
 		//open main chat when page loads
 		$('.main').addClass('main-visible')
@@ -209,9 +213,21 @@
 				let created = `${date.toLocaleTimeString('en-us', {
 					hour:'2-digit', minute:'2-digit'
 				})}`
+				index++
 				// console.log(response)
 				$('#message').val("")
-				let content = $(`<div class='message message-right'>
+				let content = $(`<div class='message message-right message-${index}'>
+										<div class='dropdown' id='dropdown-message-right'>
+											<a class='nav-link text-muted px-0' href='#' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
+												<i class='fas fa-ellipsis-v'></i>
+											</a>
+											<div class='dropdown-menu'>
+												<a class='dropdown-item d-flex align-items-center' onclick='deleteMessage(event, ${index}, ${response.Message.id})' href='#'>
+													Delete
+													<i class='far fa-trash-alt ml-auto'></i>
+												</a>
+											</div>
+										</div>
 										<!-- Avatar -->
 										<a class='avatar avatar-sm mr-4 mr-lg-5' href='#' data-chat-sidebar-toggle='#chat-1-user-profile'>
 											<img class='avatar-img' src='/files/profiles/<?php echo AuthComponent::user('User')['image'] ?>'>
@@ -252,7 +268,7 @@
 					//remove conversation in the list and update conversations in the session
 					//FINISHED(02-10-2020): find a way to fade out the deleted conversation using jquery
 					let index = document.cookie[document.cookie.length - 1]
-					$('#conversation-container').find('a').eq(index).animate({ marginLeft: '150px', opacity: 0, height: 0 }, 300);
+					$(`#conversation-${id}`).animate({ marginLeft: '150px', opacity: 0, height: 0 }, 1000);
 					setTimeout(() => {
 						location.href = '/'
 					}, 1500);
@@ -269,13 +285,23 @@
 	 * 
 	 * delete user's message on a given conversation
 	 * 
-	 * TODO: find a way to get message index and pass it to view for the animation
+	 * FINISHED(02-11-2020): find a way to get message index and pass it to view for the animation
 	 *
 	 */
-	function deleteMessage() {
-		//get message id
+	function deleteMessage(e, key, id) {
+		e.preventDefault()
 		//call ajax to server for deletion
-		//animate message deletion on success use ($('#chat-container').find('div').eq(0).animate({ opacity: 0, height: 0 }, 300, 'linear')) for animation
+		$.ajax({
+			type: "DELETE",
+			url: `/messages/${id}/delete`,
+			dataType: "json",
+			success: function (response) {
+				if(response.status == 'ok'){
+					//animate message deletion on success use ($('#chat-container').find('div').eq(0).animate({ opacity: 0, height: 0 }, 300, 'linear')) for animation
+					$(`.message-${key}`).animate({ opacity: 0, height: 0 }, 300, 'linear', function(){ $(this).delay().remove() })
+				}
+			}
+		});
 	}
 </script>
 <?php $this->end(); ?>

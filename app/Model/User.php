@@ -165,7 +165,7 @@ class User extends AppModel {
 		),
 		'Conversation' => array(
 			'className' => 'Conversation',
-			'foreignKey' => 'receiver_id',
+			'foreignKey' => 'sender_id',
 			'dependent' => false,
 			'conditions' => '',
 			'fields' => array('id', 'receiver_id', 'sender_id', 'created'),

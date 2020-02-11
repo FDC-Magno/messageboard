@@ -29,10 +29,12 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 	<?php
 		echo $this->Html->meta('icon', 'img/logo.png');
 		echo $this->Html->css('template.dark.min.css', array('media' => '(prefers-color-scheme: dark)'));
+		echo $this->Html->css('jquery-ui.min.css');
 		echo $this->Html->css('style.css');
 		echo $this->Html->script('https://use.fontawesome.com/releases/v5.12.0/js/all.js');
 		echo $this->Html->script('https://use.fontawesome.com/releases/v5.12.0/js/v4-shims.js');
 		echo $this->Html->script('jquery.min.js');
+		echo $this->Html->script('jquery-ui.min.js');
 		echo $this->Html->script('bootstrap.bundle.min.js');
 		echo $this->Html->script('plugins.bundle.js');
 		echo $this->Html->script('template.js');
@@ -46,32 +48,24 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 		<?php echo $this->Flash->render(); ?>
 	</div>
     <div class="layout">
-    <div class="container d-flex flex-column">
-        <div class="row align-items-center justify-content-center no-gutters min-vh-100">
+		<div class="container d-flex flex-column">
+			<div class="row align-items-center justify-content-center no-gutters min-vh-100">
 
-        <!-- Render View and Flash Messages -->
-                
-			<?php echo $this->fetch('content'); ?>
-                
-        <!-- Render View and Flash Messages -->
+			<!-- Render View and Flash Messages -->
+					
+				<?php echo $this->fetch('content'); ?>
+					
+			<!-- Render View and Flash Messages -->
 
-        </div> <!-- / .row -->
-    </div>
+			</div> <!-- / .row -->
+		</div>
 
-    </div><!-- .layout -->
-
-		<!-- <div id="footer">
-			<?php echo $this->Html->link(
-					$this->Html->image('cake.power.gif', array('alt' => $cakeDescription, 'border' => '0')),
-					'https://cakephp.org/',
-					array('target' => '_blank', 'escape' => false, 'id' => 'cake-powered')
-				);
-			?>
-			<p>
-				<?php echo $cakeVersion; ?>
-			</p>
-		</div> -->
-	</div>
-	<?php echo $this->element('sql_dump'); ?>
+	</div><!-- .layout -->
+	<script>
+        $('.datepicker').datepicker({
+			inline: true,
+			dateFormat: 'yy-mm-dd'
+        })
+	</script>
 </body>
 </html>
