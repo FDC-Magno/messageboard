@@ -37,6 +37,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 		echo $this->Html->script('https://use.fontawesome.com/releases/v5.12.0/js/all.js');
 		echo $this->Html->script('https://use.fontawesome.com/releases/v5.12.0/js/v4-shims.js');
 		echo $this->Html->script('jquery.min.js');
+		echo $this->Html->script('jquery.endless-scroll.js');
 		echo $this->Html->script('jquery-ui.min.js');
 		echo $this->Html->script('bootstrap.bundle.min.js');
 		echo $this->Html->script('https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js');
@@ -56,6 +57,39 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 
         $(function(){
             var timer = null;
+            // BUG(Jann): Cannot get the very last set of conversations
+            $('#conversation-container2').endlessScroll({
+                inflowPixels: 100,
+                callback: function(i, p, d) {
+                    console.log('getting data...')
+                    let data = {
+                        offset: p * 8,
+                    }
+                    $.ajax({
+                        type: "get",
+                        url: "/getConversations",
+                        data: data,
+                        dataType: "json",
+                        success: function (response) {
+                            console.log(i, p, d)
+                            // console.log(response)
+                            let conversation = []
+                            response.forEach(function(value) {
+                                let conversationClone = $('#conversation-container').find('a:last').clone()
+                                conversationClone.attr('id', `conversation-${value.id}`)
+                                conversationClone.attr('href', `/chat/${value.id}`)
+                                conversationClone.find('img').attr('src', `/files/profiles/${value.image}`)
+                                conversationClone.find('h6').html(value.name)
+                                conversationClone.find('.text-truncate:last').html(value.message)
+                                conversationClone.find('p').html(value.created)
+                                conversation.push(conversationClone)
+                            });
+                            // console.log(conversation)
+                            $('#conversation-container').append(conversation)
+                        }
+                    });
+                }
+            })
 
             $('#search').keydown(function(){
                 clearTimeout(timer); 
@@ -247,36 +281,25 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
                 <div class="tab-pane fade h-100 show active" id="tab-content-dialogs" role="tabpanel">
                     <div class="d-flex flex-column h-100">
 
-                        <div class="hide-scrollbar">
+                        <div class="hide-scrollbar" id="conversation-container2">
                             <div class="container-fluid py-6">
 
                                 <!-- Title -->
                                 <h2 class="font-bold mb-6">Chats <a href="#tab-content-create-chat" id="create-chat" data-toggle="tab" class="btn btn-primary btn-sm float-right m-0" role="tab" aria-selected="true">New Message <i class="fas fa-location-arrow ml-2"></i></a></h2>
-                                
+                                <hr>
                                 <!-- Title -->
-
-                                <!-- Search -->
-                                <form class="mb-6">
-                                    <div class="input-group">
-                                        <input type="text" class="form-control" placeholder="Search for messages or users..." aria-label="Search for messages or users...">
-                                        <div class="input-group-append">
-                                            <button class="btn btn-ico btn-secondary btn-minimal" type="submit">
-                                                <i class="fas fa-search"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </form>
-                                <!-- Search -->
 
                                 <!-- Chats -->
                                 <nav class="nav d-block list-discussions-js mb-n6" id="conversation-container">
                                     <!-- Chat link -->
                                     <?php 
+                                        $baseURL = '/files/profiles/';
                                         $conversations = $this->Session->read('conversations')['conversations'];
                                         if (empty($conversations)) {
                                             echo '<div class="text-center"><small>No Conversations yet!</small></div>';
                                         }
                                     ?>
+                                    <!-- FIXED(Jann 02/12/2020): fix conversation now showing on the receiver -->
                                     <?php foreach ($conversations as $key => $conversation) { ?>
                                     <a class="text-reset nav-link p-0 mb-6" id="conversation-<?php echo $conversation['Conversation']['id']; ?>" href="/chat/<?php echo $conversation['Conversation']['id'] ?>">
                                         <div class="card card-active-listener">
@@ -284,12 +307,12 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
                                                 <div class="media">
                                                 
                                                     <div class="avatar mr-5">
-                                                        <img class="avatar-img" src="/files/profiles/<?php echo $conversation['Receiver']['image'] ?>" alt="Bootstrap Themes">
+                                                        <img class="avatar-img" src="<?php echo $conversation['Sender']['id'] == AuthComponent::user('User')['id'] ? $baseURL.$conversation['Receiver']['image'] : $baseURL.$conversation['Sender']['image'] ?>" alt="Bootstrap Themes">
                                                     </div>
                                                     
                                                     <div class="media-body overflow-hidden">
                                                         <div class="d-flex align-items-center mb-1">
-                                                            <h6 class="text-truncate mb-0 mr-auto"><?php echo $conversation['Receiver']['name'] ?></h6>
+                                                            <h6 class="text-truncate mb-0 mr-auto"><?php echo $conversation['Sender']['id'] == AuthComponent::user('User')['id'] ? $conversation['Receiver']['name'] : $conversation['Sender']['name'] ?></h6>
                                                             <p class="small text-muted text-nowrap ml-4"><?php echo date_format(date_create($conversation['Message'][0]['created']), 'H:i A') ?></p>
                                                         </div>
                                                         <div class="text-truncate"><?php echo $conversation['Message'][count($conversation['Message'])-1]['User']['id'] == AuthComponent::user('User')['id'] ? 'You' : explode(" ", $conversation['Message'][count($conversation['Message'])-1]['User']['name'])[0] ?> : <?php echo $conversation['Message'][count($conversation['Message'])-1]['message'] ?></div>
@@ -370,12 +393,11 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
                                                         <div class="bg-secondary rounded p-6">
                                                             <div class="media">
                                                                 <div class="avatar bg-primary text-white mr-5">
-                                                                    <img src="/files/profiles/<?php echo AuthComponent::user('User')['image'] ?>">
+                                                                    <img src="<?php echo $baseURL.AuthComponent::user('User')['image'] ?>">
                                                                 </div>
                                                                 <div class="media-body">
                                                                     <label class="btn btn-sm btn-primary mb-3">
                                                                         Upload photo
-                                                                        <!-- <input type="file" name="image" id="image" class="d-none" required> -->
                                                                         <input type="file" name="data[image]" id="upload-chat-photo" class="d-none" label=''>
                                                                     </label>
                                                                     <p class="small text-muted">You can upload jpg, gif or png image files. Max file size 3mb.</p>
@@ -443,7 +465,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 
                                         <div id="profile-settings-security" class="collapse" data-parent="#profile-settings">
                                             <div class="card-body">
-                                                <?php echo $this->Form->create('false', array('url' => "/users/".AuthComponent::user('User')['id']."/editPassword")); ?>
+                                                <?php echo $this->Form->create('false', array('url' => Router::url(array('controller' => 'users', 'action' => 'editPassword', 'id' => AuthComponent::user('User')['id'])))); ?>
                                                     <div class="form-group">
                                                         <label class="small" for="current-password">Current Password</label>
                                                         <input name="current-password" id="current-password" type="password" class="form-control" placeholder="Current Password">
@@ -503,7 +525,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
                                         <div class="text-center py-6">
                                             <!-- Photo -->
                                             <div class="avatar avatar-xl mb-5">
-                                                <img class="avatar-img" src="/files/profiles/<?php echo AuthComponent::user('User')['image'] ?>" alt="">
+                                                <img class="avatar-img" src="<?php echo $baseURL.AuthComponent::user('User')['image'] ?>" alt="">
                                             </div>
 
                                             <h5><?php echo AuthComponent::user('User')['name'] ?></h5>
@@ -539,7 +561,6 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
                                                         ?>
                                                     </div>
                                                     <?php
-                                                        $gender = '';
                                                         switch (AuthComponent::user('User')['gender']) {
                                                             case 'm':
                                                                 echo '<i class="fas fa-mars"></i>';
@@ -571,7 +592,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
                                                 <div class="media align-items-center">
                                                     <div class="media-body">
                                                         <p class="small text-muted mb-0">Birthday</p>
-                                                        <p><?php $date = date_create(AuthComponent::user('User')['birthdate']); echo date_format($date, 'M d, Y'); ?></p>
+                                                        <p><?php echo date_format(date_create(AuthComponent::user('User')['birthdate']), 'M d, Y'); ?></p>
                                                     </div>
                                                     <i class="fas fa-birthday-cake"></i>
                                                 </div>

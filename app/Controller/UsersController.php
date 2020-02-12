@@ -10,6 +10,9 @@ class UsersController extends AppController {
  *
  * @var mixed
  */
+	public $uses = array(
+		'User', 'Conversation'
+	);
 
 	public function beforeFilter(){
 		parent::beforeFilter();
@@ -92,13 +95,21 @@ class UsersController extends AppController {
         $this->User->read();
         $this->User->data['User']['last_login_time'] = date('Y-m-d H:i:s');
         $this->User->save($this->User->data, false);
-    }
-
-	/**
-	 * FIXED: Get sender data and receiver data from the current user's conversation
-	 */
+	}
+	
+	//FIXED(Jann 02/10/2020): Get sender data and receiver data from the current user's conversation
 	public function welcome(){
-		$conversations = $this->User->Conversation->find('all', array('recursive' => '2', 'conditions' => array('Conversation.sender_id' => $this->Auth->user('User')['id'])));
+		$conversations = $this->Conversation->find('all', array(
+			'recursive' => '2', 
+			'conditions' => array(
+				'or' => array(
+					'Conversation.receiver_id' => $this->Auth->user('User')['id'],
+					'Conversation.sender_id' => $this->Auth->user('User')['id']
+				)
+			),
+			'order' => array('Conversation.created' => 'DESC'),
+			'limit' => 8
+		));
 		$this->Session->write('conversations', compact('conversations'));
 	}
 
@@ -128,9 +139,7 @@ class UsersController extends AppController {
 		}
 	}
 
-	/**
-	 * FIXED(02-11-2020): use user image if the image data field is empty or it is equal to user's image 
-	 */
+	//FIXED(Jann 02/11/2020): use user image if the image data field is empty or it is equal to user's image 
 	public function edit(){
 		//set autoRender as false to unset default CakePHP layout. This is to prevent our JSON response from mixing with HTML
 		$this->autoRender = false; 

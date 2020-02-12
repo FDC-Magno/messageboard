@@ -42,7 +42,7 @@ class User extends AppModel {
 		'email' => array(
 			'email' => array(
 				'rule' => array('email'),
-				'message' => 'Email must be a valid',
+				'message' => 'Email must be valid',
 				//'allowEmpty' => false,
 				'required' => true,
 				//'last' => false, // Stop validation after this rule
@@ -83,16 +83,13 @@ class User extends AppModel {
                 'message' => 'Both passwords must match.',
 				'on' => 'create', // Limit validation to 'create' or 'update' operations
             )
-        ),
+		),
+		//FIXED(Jann 02/12/2020):changed validation type from mimeType to extension validation due to "Cannot determine mimeType" error
 		'image' => array(
-			// 'mimeType' => array(
-			// 	'rule' => array('mimeType', array('image/jpeg', 'image/png')),
-			// 	'message' => 'Image must be an image',
-			// 	//'allowEmpty' => false,
-			// 	'required' => true,
-			// 	//'last' => false, // Stop validation after this rule
-			// 	//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			// ),
+			'extension' => array(
+				'rule'    => array('extension', array('gif', 'jpeg', 'png', 'jpg')),
+				'message' => 'Please supply a valid image.'
+			),
 			'notBlank' => array(
 				'rule' => array('notBlank'),
 				'message' => 'Image is required',
@@ -121,6 +118,11 @@ class User extends AppModel {
 				//'last' => false, // Stop validation after this rule
 				'on' => 'create', // Limit validation to 'create' or 'update' operations
 			),
+			'born' => array(
+				'rule'       => array('date', 'ymd'),
+				'message'    => 'Enter a valid date in YY-MM-DD format.',
+				'allowEmpty' => true
+			)
 		),
 		'hubby' => array(
 			'notBlank' => array(
@@ -165,7 +167,7 @@ class User extends AppModel {
 		),
 		'Conversation' => array(
 			'className' => 'Conversation',
-			'foreignKey' => 'sender_id',
+			'foreignKey' => 'receiver_id',
 			'dependent' => false,
 			'conditions' => '',
 			'fields' => array('id', 'receiver_id', 'sender_id', 'created'),
@@ -178,9 +180,7 @@ class User extends AppModel {
 		)
 	);
 
-	/**
-	 * FIXED: Need to prevent rehashing on user edit
-	 */
+	//FIXED(Jann 02/10/2020): Need to prevent rehashing on user edit
 	public function beforeSave($options = array()){
 		// check if user wants to create or edit files
 		// var_dump($this->id);

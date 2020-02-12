@@ -28,6 +28,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1, shrink-to-fit=no">
 	<?php
 		echo $this->Html->meta('icon', 'img/logo.png');
+		echo $this->Html->css('template.min.css');
 		echo $this->Html->css('template.dark.min.css', array('media' => '(prefers-color-scheme: dark)'));
 		echo $this->Html->css('jquery-ui.min.css');
 		echo $this->Html->css('style.css');

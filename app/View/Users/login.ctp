@@ -6,13 +6,13 @@
     <!-- Text -->
     <p class="text-center mb-6">Welcome to the official Chat web-client.</p>
     
-    <!-- FIXME: give fields their respective default values -->
+    <!-- FIXED(Jann 02/12/2020): give fields their respective default values -->
     <!-- Form -->
-    <?php echo $this->Form->create(false, array('url' => '/login')) ?>
+    <?php echo $this->Form->create(false, array('url' => Router::url(array('controller' => 'users', 'action' => 'login')))) ?>
         <!-- Email -->
         <div class="form-group">
             <label for="email" class="sr-only">Email Address</label>
-            <input type="email" name="email" class="form-control" id="email" placeholder="Enter your email" value="<?php echo !empty($this->request->data['email']); ?>">
+            <input type="email" name="email" class="form-control" id="email" placeholder="Enter your email" value="<?php echo $this->request->data('email'); ?>">
         </div>
 
         <!-- Password -->

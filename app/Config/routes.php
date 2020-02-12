@@ -28,6 +28,7 @@
 	Router::connect('/', array('controller' => 'users', 'action' => 'welcome'));
 	Router::connect('/home', array('controller' => 'pages', 'action' => 'display', 'home'));
 	Router::connect('/users/:id/editPassword', array('controller' => 'users', 'action' => 'editPassword'));
+	Router::connect('/getConversations', array('controller' => 'conversations', 'action' => 'getConversations'));
 	Router::connect('/login', array('controller' => 'users', 'action' => 'login'));
 	Router::connect('/users/index/search?', array('controller' => 'users', 'action' => 'index'));
 	Router::connect('/chat/:id', array('controller' => 'conversations', 'action' => 'view'));

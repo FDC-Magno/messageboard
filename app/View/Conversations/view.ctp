@@ -1,4 +1,4 @@
-<!-- TODO: redirect if there are no messages -->
+<!-- FINISHED(Jann 02/12/2020): redirect if there are no messages -->
 <!-- Chat -->
 <div id="chat-1" class="chat dropzone-form-js" data-dz-url="some.php">
 <?php
@@ -12,7 +12,7 @@
 			<div class="container">
 
 				<div class="row align-items-center">
-					<!-- FIXED(02-10-2020): fix icons and layouts -->
+					<!-- FIXED(Jann 02/10/2020): fix icons and layouts -->
 					<!-- Close chat(mobile) -->
 					<div class="col-3 d-lg-none">
 						<ul class="list-inline mb-0">
@@ -28,12 +28,12 @@
 					<div class="col-6 col-lg-6">
 						<div class="media text-center text-lg-left">
 							<div class="avatar avatar-sm d-none d-lg-inline-block mr-5">
-								<img src="/files/profiles/<?php echo $conversation['Receiver']['image'] ?>" class="avatar-img" alt="">
+								<img src="/files/profiles/<?php echo $conversation['Receiver']['id'] == AuthComponent::user('User')['id'] ? $conversation['Sender']['image'] : $conversation['Receiver']['image']; ?>" class="avatar-img" alt="">
 							</div>
 
 							<div class="media-body align-self-center">
-								<h6 class="mb-n2"><?php echo $conversation['Receiver']['name'] ?></h6>
-								<small class="text-muted">Last Log in Time: <?php echo date_format(date_create($conversation['Receiver']['last_login_time']), 'H:i A'); ?></small>
+								<h6 class="mb-n2"><?php echo $conversation['Receiver']['id'] == AuthComponent::user('User')['id'] ? $conversation['Sender']['name'] : $conversation['Receiver']['name'] ?></h6>
+								<small class="text-muted">Last Log in Time: <?php echo $conversation['Receiver']['id'] == AuthComponent::user('User')['id'] ? date_format(date_create($conversation['Sender']['last_login_time']), 'H:i A') : date_format(date_create($conversation['Receiver']['last_login_time']), 'H:i A'); ?></small>
 							</div>
 						</div>
 					</div>
@@ -96,7 +96,7 @@
 										</div>
 										<!-- Avatar -->
 										<a class='avatar avatar-sm mr-4 mr-lg-5' href='#'>
-											<img class='avatar-img' src='/files/profiles/{$conversation['Sender']['image']}'>
+											<img class='avatar-img' src='/files/profiles/{$message['User']['image']}'>
 										</a>
 
 										<div class='message-body'>
@@ -114,7 +114,7 @@
 							echo "<div class='message'>
 										<!-- Avatar -->
 										<a class='avatar avatar-sm mr-4 mr-lg-5' href='#' data-chat-sidebar-toggle='#chat-1-user-profile'>
-											<img class='avatar-img' src='/files/profiles/{$conversation['Sender']['image']}'>
+											<img class='avatar-img' src='/files/profiles/{$message['User']['image']}'>
 										</a>
 				
 										<div class='message-body'>
@@ -157,7 +157,6 @@
 
 					</div>
 				</form>
-
 			</div>
 		</div>
 		<!-- Chat: Footer -->
@@ -185,7 +184,7 @@
 			//get conversation id with the use of $id params
 			let id = '<?php echo $conversation['Conversation']['id']; ?>'
 			deleteConversation(id)
-		});
+		});		
 	})
 
 	//send message and store message in database
@@ -196,9 +195,8 @@
 			conversation_id: <?php echo $conversation['Conversation']['id']; ?>
 		}
 		let id = <?php echo $conversation['Conversation']['id'] ?>;
-		/**
-		* FINISHED(02-10-2020): Finish created time format
-		*/
+
+		// FINISHED(Jann 02/10/2020): Finish created time format
 		$.ajax({
 			type: "post",
 			accepts: {
@@ -214,35 +212,14 @@
 					hour:'2-digit', minute:'2-digit'
 				})}`
 				index++
-				// console.log(response)
+				// FINISHED(Jann 02/12/2020): clone existing conversation then append using jquery
 				$('#message').val("")
-				let content = $(`<div class='message message-right message-${index}'>
-										<div class='dropdown' id='dropdown-message-right'>
-											<a class='nav-link text-muted px-0' href='#' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
-												<i class='fas fa-ellipsis-v'></i>
-											</a>
-											<div class='dropdown-menu'>
-												<a class='dropdown-item d-flex align-items-center' onclick='deleteMessage(event, ${index}, ${response.Message.id})' href='#'>
-													Delete
-													<i class='far fa-trash-alt ml-auto'></i>
-												</a>
-											</div>
-										</div>
-										<!-- Avatar -->
-										<a class='avatar avatar-sm mr-4 mr-lg-5' href='#' data-chat-sidebar-toggle='#chat-1-user-profile'>
-											<img class='avatar-img' src='/files/profiles/<?php echo AuthComponent::user('User')['image'] ?>'>
-										</a>
-				
-										<div class='message-body'>
-											<div class='message-content bg-primary text-white'>
-												<p>${response.Message.message.replace("\n", "<br />")}</p>
-											</div>
-				
-											<div class='message-footer'>
-												<small class='text-muted'>${created}</small>
-											</div>
-										</div>
-									</div>`)
+				let content = $('#chat-container').find('.message-right:last').clone();
+				content.removeClass();
+				content.addClass(`message message-right message-${index}`)
+				content.find('.dropdown-item').attr('onclick', `deleteMessage(event, ${index}, ${response.Message.id})`)
+				content.find('p').html(`${response.Message.message.replace("\n", "<br />")}`)
+				content.find('small').html(`${created}`)
 				$('#chat-container').append(content);
 				content.hide()
 				content.fadeIn('1000')
@@ -266,7 +243,7 @@
 				//check if response is ok
 				if (response.status == 'ok') {
 					//remove conversation in the list and update conversations in the session
-					//FINISHED(02-10-2020): find a way to fade out the deleted conversation using jquery
+					//FINISHED(Jann 02/10/2020): find a way to fade out the deleted conversation using jquery
 					let index = document.cookie[document.cookie.length - 1]
 					$(`#conversation-${id}`).animate({ marginLeft: '150px', opacity: 0, height: 0 }, 1000);
 					setTimeout(() => {
@@ -281,13 +258,8 @@
 		});
 	}
 
-	/**
-	 * 
-	 * delete user's message on a given conversation
-	 * 
-	 * FINISHED(02-11-2020): find a way to get message index and pass it to view for the animation
-	 *
-	 */
+	// delete user's message on a given conversation
+	// FINISHED(Jann 02/11/2020): find a way to get message index and pass it to view for the animation
 	function deleteMessage(e, key, id) {
 		e.preventDefault()
 		//call ajax to server for deletion

@@ -31,7 +31,6 @@ class MessagesController extends AppController {
 				$this->response->type('application/json');
 				$this->response->body(json_encode($message));
 				return $this->response;
-				// return json_encode($message);
 			}
 		}
 	}
