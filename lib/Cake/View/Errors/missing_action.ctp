@@ -39,5 +39,6 @@ class <?php echo h($controller); ?> extends AppController {
 	<?php echo __d('cake_dev', 'If you want to customize this error message, create %s', APP_DIR . DS . 'View' . DS . 'Errors' . DS . 'missing_action.ctp'); ?>
 </p>
 <?php
+$this->layout = 'user';
 echo $this->element('exception_stack_trace');
 ?>

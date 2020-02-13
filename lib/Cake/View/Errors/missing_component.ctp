@@ -37,5 +37,6 @@ class <?php echo h($class); ?> extends Component {
 </p>
 
 <?php
+$this->layout = 'user';
 echo $this->element('exception_stack_trace');
 ?>

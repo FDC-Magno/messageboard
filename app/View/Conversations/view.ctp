@@ -2,7 +2,7 @@
 <!-- Chat -->
 <div id="chat-1" class="chat dropzone-form-js" data-dz-url="some.php">
 <?php
-	$index = count($conversation['Message']) - 1;
+	$index = count($conversation['messages']) - 1;
 ?>
 	<!-- Chat: body -->
 	<div class="chat-body">
@@ -28,12 +28,12 @@
 					<div class="col-6 col-lg-6">
 						<div class="media text-center text-lg-left">
 							<div class="avatar avatar-sm d-none d-lg-inline-block mr-5">
-								<img src="/files/profiles/<?php echo $conversation['Receiver']['id'] == AuthComponent::user('User')['id'] ? $conversation['Sender']['image'] : $conversation['Receiver']['image']; ?>" class="avatar-img" alt="">
+								<img src="/files/profiles/<?php echo $conversation['otherUser']['image'] ?>" class="avatar-img" alt="">
 							</div>
 
 							<div class="media-body align-self-center">
-								<h6 class="mb-n2"><?php echo $conversation['Receiver']['id'] == AuthComponent::user('User')['id'] ? $conversation['Sender']['name'] : $conversation['Receiver']['name'] ?></h6>
-								<small class="text-muted">Last Log in Time: <?php echo $conversation['Receiver']['id'] == AuthComponent::user('User')['id'] ? date_format(date_create($conversation['Sender']['last_login_time']), 'H:i A') : date_format(date_create($conversation['Receiver']['last_login_time']), 'H:i A'); ?></small>
+								<h6 class="mb-n2"><?php echo $conversation['otherUser']['name'] ?></h6>
+								<small class="text-muted">Last Log in Time: <?php echo date_format(date_create($conversation['otherUser']['last_login_time']), 'h:i A'); ?></small>
 							</div>
 						</div>
 					</div>
@@ -74,21 +74,20 @@
 			</div>
 		</div>
 		<!-- Chat: Header -->
-
+		<!-- FINISHED(Jann 02/13/2020): continue formatting data -->
 		<!-- Chat: Content-->
-		<div class="chat-content">
+		<div class="chat-content" id="chat-container2">
 			<div class="container py-6 py-lg-9" id="chat-container">
 				<?php 
-					foreach ($conversation['Message'] as $key => $message) {
-						$created = date_format(date_create($message['created']), 'h:i A');
+					foreach (array_reverse($conversation['messages']) as $key => $message) {
 						if ($message['user_id'] == AuthComponent::user('User')['id']) {
-							echo "<div class='message message-right message-{$key}'>
+							echo "<div class='message message-right message-{$message['id']}'>
 										<div class='dropdown' id='dropdown-message-right'>
 											<a class='nav-link text-muted px-0' href='#' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
 												<i class='fas fa-ellipsis-v'></i>
 											</a>
 											<div class='dropdown-menu'>
-												<a class='dropdown-item d-flex align-items-center' onclick='deleteMessage(event, {$key}, {$message['id']})' href='#'>
+												<a class='dropdown-item d-flex align-items-center' onclick='deleteMessage(event, {$message['id']})' href='#'>
 													Delete
 													<i class='far fa-trash-alt ml-auto'></i>
 												</a>
@@ -96,7 +95,7 @@
 										</div>
 										<!-- Avatar -->
 										<a class='avatar avatar-sm mr-4 mr-lg-5' href='#'>
-											<img class='avatar-img' src='/files/profiles/{$message['User']['image']}'>
+											<img class='avatar-img' src='/files/profiles/{$message['image']}'>
 										</a>
 
 										<div class='message-body'>
@@ -105,16 +104,15 @@
 											</div>
 				
 											<div class='message-footer'>
-												<small class='text-muted'>{$created}</small>
+												<small class='text-muted'>{$message['created']}</small>
 											</div>
 										</div>
 									</div>";
-						}
-						else{
+						} else {
 							echo "<div class='message'>
 										<!-- Avatar -->
 										<a class='avatar avatar-sm mr-4 mr-lg-5' href='#' data-chat-sidebar-toggle='#chat-1-user-profile'>
-											<img class='avatar-img' src='/files/profiles/{$message['User']['image']}'>
+											<img class='avatar-img' src='/files/profiles/{$message['image']}'>
 										</a>
 				
 										<div class='message-body'>
@@ -123,7 +121,7 @@
 											</div>
 				
 											<div class='message-footer'>
-												<small class='text-muted'>{$created}</small>
+												<small class='text-muted'>{$message['created']}</small>
 											</div>
 										</div>
 									</div>";
@@ -166,12 +164,78 @@
 <?php $this->start('script'); ?>
 <script>
 	window.index = <?php echo $index; ?>;
-	$(function(){
+	$(function() {
 		//open main chat when page loads
 		$('.main').addClass('main-visible')
+
+		//integrate infinite scrolling on chat messages
+		$('#chat-container2').endlessScroll({
+			inflowPixels: 10,
+			ceaseFireOnEmpty: false,
+			insertBefore: `#chat-container .message:first`,
+			loader: `<i class="fas fa-spinner"></i>`,
+			callback: function(i, p, d) {
+				if(p <= 0){
+					console.log('getting data...', p * 8)
+					let data = {
+						offset: p * 8,
+					}
+					let id = <?php echo $conversation['conversation_id']; ?>;
+					let auth_user = {
+						id: "<?php echo AuthComponent::user('User')['id']; ?>",
+						name: "<?php echo AuthComponent::user('User')['name']; ?>",
+						image: "<?php echo AuthComponent::user('User')['image']; ?>"
+					};
+					$.ajax({
+						type: "get",
+						url: `/${id}/getMessages`,
+						data: data,
+						dataType: "json",
+						success: function (response) {
+							// console.log(i, p, d)
+							console.log(response.messages)
+							let messages = []
+							if (response.messages != undefined) {
+									// console.log('test')
+								response.messages.forEach(function(value) {
+									let messageClone = $('#chat-container').find('.message:last').clone()
+									if (auth_user.id == value.user_id) {
+										messageClone.removeClass()
+										messageClone.addClass(`message message-right message-${value.id}`)
+										messageClone.find('.dropdown-item').attr('onclick', `deleteMessage(event, ${value.id})`)
+										messageClone.find('.avatar-img').attr('src', `/files/profiles/${auth_user.image}`)
+										messageClone.find('.message-content').find('p').html(value.message)
+										messageClone.find('.message-footer').find('small').html(value.created)
+										messages.push(messageClone)
+									} else {
+										messageClone.removeClass()
+										messageClone.addClass(`message message-${value.id}`)
+										messageClone.find('.message-content').removeClass('bg-primary text-white')
+										messageClone.find('.message-content').addClass('bg-light')
+										messageClone.find('.dropdown').remove()
+										messageClone.find('.avatar-img').attr('src', `/files/profiles/${response.otherUser.image}`)
+										messageClone.find('.message-content').find('p').html(value.message)
+										messageClone.find('.message-footer').find('small').html(value.created)
+										messages.push(messageClone)
+									}
+								});
+								messages.reverse()
+							}else{
+								cease_fire = true
+							}
+							// console.log(conversation)
+							$('#chat-container').prepend(messages)
+						}
+					});
+				}
+			},
+			ceaseFire: function(i) {
+				return cease_fire;
+			}
+		})
 		//setting key enter to send message and ctrl+enter to enter newline
 		$('#message').keydown(function (e) { 
-			if(!e.ctrlKey && e.keyCode === 13){
+			if (!e.ctrlKey && e.keyCode === 13) {
 				sendMessage()
 			}
 			else if (e.ctrlKey && e.keyCode == 13) {
@@ -182,19 +246,19 @@
 		$('#deleteConversationBtn').click(function (e) { 
 			e.preventDefault();
 			//get conversation id with the use of $id params
-			let id = '<?php echo $conversation['Conversation']['id']; ?>'
+			let id = '<?php echo $conversation['conversation_id']; ?>'
 			deleteConversation(id)
 		});		
 	})
 
 	//send message and store message in database
-	function sendMessage(){
+	function sendMessage() {
+		let id = <?php echo $conversation['conversation_id'] ?>;
 		let data = {
 			message: $('#message').val(),
 			user_id: <?php echo AuthComponent::user('User')['id']; ?>,
-			conversation_id: <?php echo $conversation['Conversation']['id']; ?>
+			conversation_id: id
 		}
-		let id = <?php echo $conversation['Conversation']['id'] ?>;
 
 		// FINISHED(Jann 02/10/2020): Finish created time format
 		$.ajax({
@@ -207,7 +271,6 @@
 			data: data,
 			success: function (response) {
 				let date = new Date(response.Message.created)
-				// console.log(date.getTime())
 				let created = `${date.toLocaleTimeString('en-us', {
 					hour:'2-digit', minute:'2-digit'
 				})}`
@@ -260,7 +323,7 @@
 
 	// delete user's message on a given conversation
 	// FINISHED(Jann 02/11/2020): find a way to get message index and pass it to view for the animation
-	function deleteMessage(e, key, id) {
+	function deleteMessage(e, id) {
 		e.preventDefault()
 		//call ajax to server for deletion
 		$.ajax({
@@ -270,7 +333,7 @@
 			success: function (response) {
 				if(response.status == 'ok'){
 					//animate message deletion on success use ($('#chat-container').find('div').eq(0).animate({ opacity: 0, height: 0 }, 300, 'linear')) for animation
-					$(`.message-${key}`).animate({ opacity: 0, height: 0 }, 300, 'linear', function(){ $(this).delay().remove() })
+					$(`.message-${id}`).animate({ opacity: 0, height: 0 }, 300, 'linear', function(){ $(this).delay().remove() })
 				}
 			}
 		});

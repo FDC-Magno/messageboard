@@ -19,7 +19,7 @@
 				<input type="file" name="data[image]" id="image" class="d-none <?php echo empty($this->validationErrors['User']['image'][0]) ? '' : 'is-invalid'; ?>" label=''>
 				<label class="stretched-label mb-0" for="image"></label>
 				<div class="invalid-feedback">
-					<?php echo $this->validationErrors['User']['image'][0] ?>
+					<?php echo $this->validationErrors['User']['image'][0]; ?>
 				</div>
 			</div>
 		</div>
@@ -28,7 +28,7 @@
 			<label for="name" class="sr-only">Name</label>
 			<input type="text" name="name" id="name" class="form-control <?php echo empty($this->validationErrors['User']['name'][0]) ? '' : 'is-invalid'; ?>" placeholder="Enter Fullname" value="<?php echo $this->request->data('name'); ?>">
 			<div class="invalid-feedback">
-				<?php echo $this->validationErrors['User']['name'][0] ?>
+				<?php echo $this->validationErrors['User']['name'][0]; ?>
 			</div>
 		</div>
 
@@ -37,7 +37,7 @@
 			<label for="email" class="sr-only">Email</label>
 			<input type="email" name="email" id="email" class="form-control <?php echo empty($this->validationErrors['User']['email'][0]) ? '' : 'is-invalid'; ?>" placeholder="Enter Email" value="<?php echo $this->request->data('email'); ?>">
 			<div class="invalid-feedback">
-				<?php echo $this->validationErrors['User']['email'][0] ?>
+				<?php echo $this->validationErrors['User']['email'][0]; ?>
 			</div>
 		</div>
 
@@ -46,7 +46,7 @@
 			<label for="password" class="sr-only">Password</label>
 			<input type="password" name="password" id="password" class="form-control <?php echo empty($this->validationErrors['User']['password'][0]) ? '' : 'is-invalid'; ?>" placeholder="Enter Password">
 			<div class="invalid-feedback">
-				<?php echo $this->validationErrors['User']['password'][0] ?>
+				<?php echo $this->validationErrors['User']['password'][0]; ?>
 			</div>
 		</div>
 
@@ -55,7 +55,7 @@
 			<label for="password_confirm" class="sr-only">Confirm Password</label>
 			<input type="password" name="password_confirm" id="password_confirm" class="form-control <?php echo empty($this->validationErrors['User']['password_confirm'][0]) ? '' : 'is-invalid'; ?>" placeholder="Confirm Password">
 			<div class="invalid-feedback">
-				<?php echo $this->validationErrors['User']['password_confirm'][0] ?>
+				<?php echo $this->validationErrors['User']['password_confirm'][0]; ?>
 			</div>
 		</div>
 
@@ -64,7 +64,7 @@
 			<label for="birthdate" class="sr-only">Birthdate</label>
 			<input type="text" name="birthdate" id="birthdate" class="form-control datepicker <?php echo empty($this->validationErrors['User']['birthdate'][0]) ? '' : 'is-invalid'; ?>" placeholder="Enter Birthdate" value="<?php echo $this->request->data('birthdate'); ?>">
 			<div class="invalid-feedback">
-				<?php echo $this->validationErrors['User']['birthdate'][0] ?>
+				<?php echo $this->validationErrors['User']['birthdate'][0]; ?>
 			</div>
 		</div>
 
@@ -79,16 +79,16 @@
 				<option value="o" <?php echo $this->request->data('gender') == 'o' ? 'selected' : ''; ?> >Others</option>
 			</select>
 			<div class="invalid-feedback">
-				<?php echo $this->validationErrors['User']['gender'][0] ?>
+				<?php echo $this->validationErrors['User']['gender'][0]; ?>
 			</div>
 		</div>
 
 		<!-- Hubby -->
 		<div class="form-group">
 			<label for="hubby" class="sr-only">Hubby</label>
-			<textarea name="hubby" id="hubby" class="form-control <?php echo empty($this->validationErrors['User']['hubby'][0]) ? '' : 'is-invalid'; ?>" placeholder="" rows="6"><?php echo !empty($this->request->data('hubby')) ? $this->request->data('hubby') : 'Enter hubby here' ?></textarea>
+			<textarea name="hubby" id="hubby" class="form-control <?php echo empty($this->validationErrors['User']['hubby'][0]) ? '' : 'is-invalid'; ?>" placeholder="" rows="6"><?php echo !empty($this->request->data('hubby')) ? $this->request->data('hubby') : 'Enter hubby here'; ?></textarea>
 			<div class="invalid-feedback">
-				<?php echo $this->validationErrors['User']['hubby'][0] ?>
+				<?php echo $this->validationErrors['User']['hubby'][0]; ?>
 			</div>
 		</div>
 

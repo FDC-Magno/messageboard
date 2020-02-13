@@ -37,5 +37,6 @@ class <?php echo h($class . ' extends ' . (empty($plugin) ? '' : $plugin)); ?>Ap
 </p>
 
 <?php
+$this->layout = 'user';
 echo $this->element('exception_stack_trace');
 ?>

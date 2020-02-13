@@ -34,5 +34,6 @@
 	<?php echo __d('cake_dev', 'If you want to customize this error message, create %s', APP_DIR . DS . 'View' . DS . 'Errors' . DS . 'pdo_error.ctp'); ?>
 </p>
 <?php
+$this->layout = 'user';
 echo $this->element('exception_stack_trace');
 ?>

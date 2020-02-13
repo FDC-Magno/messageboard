@@ -14,25 +14,24 @@ class ConversationsController extends AppController {
 	public function beforeFilter()
 	{
 		parent::beforeFilter();
-		$this->Auth->allow('view', 'add', 'getConversations');
+		$this->Auth->allow();
 	}
 
 	//Getting messages when clicking a conversation and opening chat details
 	//FIXED(Jann 02/12/2020): redirect if conversation does not exist
-	public function view()
-	{
+	public function view() {
 		$conversationId = $this->request->params['id'];
 		//checks if conversation exist with the conversationId
-		if ($this->readMessage($conversationId)) {
-			$conversation = $this->readMessage($conversationId);
+		$conversation = $this->readMessage($conversationId);
+		if (!empty($conversation)) {
+			// debug($conversation);
 			$this->set(compact('conversation'));
-		}
-		else {
+		} else {
 			return $this->redirect(Router::url(array('controller' => 'users', 'action' => 'welcome')));
 		}
 	}
 	// FIXED(Jann 02/12/2020): duplicate conversations 
-	public function add(){
+	public function add() {
 		$this->autoRender = false;
 		if ($this->request->is('post')) {
 			if ($this->addToDatabase($this->request->data)) {
@@ -40,8 +39,7 @@ class ConversationsController extends AppController {
 					'status' => 'ok',
 					'url' => Router::url(array('controller' => 'conversations', 'action' => 'view', 'id' => $this->Conversation->getLastInsertId()))
 				));
-			}
-			else{
+			} else {
 				$this->Flash->error("Conversation already exists");
 				return json_encode(array('url' => Router::url(array('controller' => 'users', 'action' => 'welcome'))));
 			}
@@ -49,12 +47,12 @@ class ConversationsController extends AppController {
 	}
 
 	//delete conversation
-	public function delete(){
+	public function delete() {
 		$this->request->onlyAllow('ajax');
 		$this->autoRender = false;
 		if ($this->request->is(array('delete', 'post'))) {
 			$id = $this->request->params['id'];
-			if($this->Conversation->delete($id)){
+			if ($this->Conversation->delete($id)) {
 				$this->response->type('application/json');
 				$this->response->body(json_encode(array('status' => 'ok')));
 				$this->updateUserConversations();
@@ -86,35 +84,54 @@ class ConversationsController extends AppController {
 	}
 
 	//sets the datetime of the message that is red
-	public function readMessage($id){
-		$this->Conversation->recursive = 2;
-		if ($this->Conversation->findById($id)) {
-			$conversation = $this->Conversation->findById($id);
+	public function readMessage($id) {
+		$conversation = $this->Message->find('all', array('recursive' => '2', 'conditions' => array('Message.conversation_id' => $id), 'limit' => 8, 'order' => array('Message.created' => 'DESC')));
+		// debug($conversation);
+		if (!empty($conversation)) {
+			$messages = array('otherUser' => array(), 'messages' => array(), 'conversation_id' => $id);
 			$date = date('Y-m-d H:i:s');
-			foreach ($conversation['Message'] as $key => $message) {
-				if ($message['user_id'] != AuthComponent::user('User')['id'] && !$message['read']) {
-					$this->Message->id = $message['id'];
+			foreach ($conversation as $key => $message) {
+				if ($message['Message']['user_id'] != AuthComponent::user('User')['id']) {
+					$messages['otherUser'] = $message['User'];
+					break;
+				}
+			}
+			if (empty($messages['otherUser'])) {
+				$conversationId = $this->Conversation->findById($id);
+				$messages['otherUser'] = $conversationId['Receiver'];
+			}
+			foreach ($conversation as $key => $message) {
+				array_push($messages['messages'], array(
+					'id' => $message['Message']['id'], 
+					'image' => $message['User']['image'],
+					'message' => $message['Message']['message'],
+					'user_id' => $message['Message']['user_id'],
+					'created' => date_format(date_create($message['Message']['created']), 'h:i A')
+				));
+				if ($message['Message']['user_id'] != AuthComponent::user('User')['id'] && !$message['Message']['read']) {
+					$this->Message->id = $message['Message']['id'];
 					$this->Message->saveField('read', $date);
 					$this->Message->clear();
 				}
-			}
-			return $conversation;
+			} 
+			
+			return $messages;
 		}
 		return false;
 	}
 
 	//updates user's conversation list in session
-	public function updateUserConversations(){
+	public function updateUserConversations() {
 		$conversations = $this->User->Conversation->find('all', array(
 			'recursive' => '2', 
 			'conditions' => array(
 				'or' => array(
 					'Conversation.receiver_id' => $this->Auth->user('User')['id'],
 					'Conversation.sender_id' => $this->Auth->user('User')['id']
-				),
-				'order' => array('Conversation.created' => 'DESC'),
-				'limit' => 8
-			)
+				)
+			),
+			'order' => array('Conversation.created' => 'DESC'),
+			'limit' => 8
 		));
 		$this->Session->write('conversations', compact('conversations'));
 	}
@@ -139,8 +156,7 @@ class ConversationsController extends AppController {
 	}
 
 	//format data before sending it to client
-	public function formatData($conversations)
-	{
+	public function formatData($conversations) {
 		$data = array();
 		foreach ($conversations as $key => $conversation) {
 			$temp = '';

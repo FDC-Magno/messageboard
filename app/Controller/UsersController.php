@@ -14,12 +14,12 @@ class UsersController extends AppController {
 		'User', 'Conversation'
 	);
 
-	public function beforeFilter(){
+	public function beforeFilter() {
 		parent::beforeFilter();
-		$this->Auth->allow('add', 'signup', 'index');
+		$this->Auth->allow('login', 'signup');
 	}
 
-	public function index(){
+	public function index() {
 		$this->autoRender = false;
 		$users = $this->User->find('all', array(
 			'conditions' => array(
@@ -32,13 +32,12 @@ class UsersController extends AppController {
 		return json_encode($users);
 	}
 
-	public function signup()
-	{
+	public function signup() {
 		// set the signup's layout to user.ctp
 		$this->layout = 'user';
 		$destination = WWW_ROOT.DS."files".DS."profiles".DS;
 		// check if request is post
-		Debugger::log($this->request->data);
+		// Debugger::log($this->request->data);
 		if ($this->request->is('post')) {
 			$this->User->create();
 			// store the whole image data in the $image variable first to prevent overwrite
@@ -59,13 +58,14 @@ class UsersController extends AppController {
 
 	}
 
-	public function login(){
+	public function login() {
 		// set the signup's layout to user.ctp
 		$this->layout = 'user';
-		// check if request is post
+		//check if there is already a logged in user
 		if ($this->Auth->login()) {
 			return $this->redirect($this->Auth->redirectUrl());
 		}
+		// check if request is post
 		if ($this->request->is('post')) {
 			// redirect to home page if the user is already logged in
 			// find a matching user with the request data
@@ -83,14 +83,14 @@ class UsersController extends AppController {
 					$this->Flash->success(__('You have successfully logged in.'));
 					return $this->redirect(array('action' => 'welcome'));
 				}
-			}else{
+			} else {
 				return $this->Flash->error(__('Invalid email or password.'));
 			}
 		}
 	}
 
 	//update last login time field when user logs in
-	protected function updateLoginFields(){
+	protected function updateLoginFields() {
         $this->User->id = $this->Auth->user('User')['id'];
         $this->User->read();
         $this->User->data['User']['last_login_time'] = date('Y-m-d H:i:s');
@@ -98,7 +98,7 @@ class UsersController extends AppController {
 	}
 	
 	//FIXED(Jann 02/10/2020): Get sender data and receiver data from the current user's conversation
-	public function welcome(){
+	public function welcome() {
 		$conversations = $this->Conversation->find('all', array(
 			'recursive' => '2', 
 			'conditions' => array(
@@ -113,12 +113,12 @@ class UsersController extends AppController {
 		$this->Session->write('conversations', compact('conversations'));
 	}
 
-	public function editPassword(){
+	public function editPassword() {
 		$this->autoRender = false;
 		if ($this->request->is('post')) {
-			if($this->Auth->user('User')['password'] == AuthComponent::password($this->request->data['current-password'])){
+			if ($this->Auth->user('User')['password'] == AuthComponent::password($this->request->data['current-password'])) {
 				$this->User->id = $this->Auth->user('User')['id'];
-				if($this->User->saveField('password', AuthComponent::password($this->request->data['password']))){
+				if ($this->User->saveField('password', AuthComponent::password($this->request->data['password']))) {
 					$this->Flash->success('Password successfully changed');
 					return $this->redirect('/');
 				}
@@ -126,38 +126,36 @@ class UsersController extends AppController {
 		}
 	}
 
-	public function logout()
-	{
-		if($this->Auth->user())
-		{
+	public function logout() {
+		if ($this->Auth->user()) {
+			$this->Session->delete('conversations');
 			$this->redirect($this->Auth->logout());
-		}
-		else
-		{
+		} else {
 			$this->redirect(array('controller'=>'pages','action' => 'display','home'));
 			$this->Session->setFlash(__('Not logged in'), 'default', array(), 'auth');
 		}
 	}
 
 	//FIXED(Jann 02/11/2020): use user image if the image data field is empty or it is equal to user's image 
-	public function edit(){
+	public function edit() {
 		//set autoRender as false to unset default CakePHP layout. This is to prevent our JSON response from mixing with HTML
 		$this->autoRender = false; 
 		$directory = WWW_ROOT.DS."files".DS."profiles".DS;
 		//check if HTTP method is correct for edit
-		if($this->request->is('post')){
+		if ($this->request->is('post')) {
 			//get data from request object
 			$data = $this->request->data;			
 			//check if product ID was provided
-			if(!empty($data['id'])){
+			if (!empty($data['id'])) {
 				$this->User->recursive = -1;
 				$user = $this->User->findById($data['id']);
 				$finalData = array_merge($user['User'], $data);
 				//set the user ID to update
 				$this->User->id = $data['id'];
+				//store image name with or without image field in post data
 				$finalData['image'] = $data['image']['name'] == $user['User']['image'] || $data['image']['name'] == '' ? $user['User']['image'] : $data['image']['name'];
-				Debugger::log($data['image']['name'] == '');
-				if($this->User->save($finalData)){
+				//save data to database
+				if ($this->User->save($finalData)) {
 					$this->Auth->login($this->User->read(null, $this->Auth->User('id')));
 					if ($finalData['image'] != $user['User']['image']) {
 						move_uploaded_file($data['image']['tmp_name'], $directory.$finalData['image']);

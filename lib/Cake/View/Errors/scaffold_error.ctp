@@ -32,6 +32,7 @@ function _scaffoldError() {<br />
 </pre>
 
 <?php
+$this->layout = 'user';
 if (isset($error) && $error instanceof Exception) {
 	echo $this->element('exception_stack_trace');
 }

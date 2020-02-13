@@ -54,40 +54,69 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
         $('.datepicker').datepicker({
             inline: true
         })
+        
+        //get file before uploading to server
+        function readURL(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    $('#welcomeForm').find('img').attr('src', e.target.result);
+                }
+                
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
 
-        $(function(){
+        $(function() {
             var timer = null;
-            // BUG(Jann): Cannot get the very last set of conversations
+            window.cease_fire = false;
+
+            //change preview after an image is selected
+            $('#upload-chat-photo').change(function() {
+                readURL(this)
+            })
+            // FINISHED(Jann 02/12/2020): Limit endless scrolling if content is empty
             $('#conversation-container2').endlessScroll({
-                inflowPixels: 100,
+                ceaseFireOnEmpty: false,
+                inflowPixels: 10,
                 callback: function(i, p, d) {
-                    console.log('getting data...')
-                    let data = {
-                        offset: p * 8,
-                    }
-                    $.ajax({
-                        type: "get",
-                        url: "/getConversations",
-                        data: data,
-                        dataType: "json",
-                        success: function (response) {
-                            console.log(i, p, d)
-                            // console.log(response)
-                            let conversation = []
-                            response.forEach(function(value) {
-                                let conversationClone = $('#conversation-container').find('a:last').clone()
-                                conversationClone.attr('id', `conversation-${value.id}`)
-                                conversationClone.attr('href', `/chat/${value.id}`)
-                                conversationClone.find('img').attr('src', `/files/profiles/${value.image}`)
-                                conversationClone.find('h6').html(value.name)
-                                conversationClone.find('.text-truncate:last').html(value.message)
-                                conversationClone.find('p').html(value.created)
-                                conversation.push(conversationClone)
-                            });
-                            // console.log(conversation)
-                            $('#conversation-container').append(conversation)
+                    if(p >= 0){
+                        console.log('getting data...', p * 8)
+                        let data = {
+                            offset: p * 8,
                         }
-                    });
+                        $.ajax({
+                            type: "get",
+                            url: "/getConversations",
+                            data: data,
+                            dataType: "json",
+                            success: function (response) {
+                                // console.log(i, p, d)
+                                console.log(response.length)
+                                let conversation = []
+                                if (response.length > 0) {
+                                    response.forEach(function(value) {
+                                        let conversationClone = $('#conversation-container').find('a:last').clone()
+                                        conversationClone.attr('id', `conversation-${value.id}`)
+                                        conversationClone.attr('href', `/chat/${value.id}`)
+                                        conversationClone.find('img').attr('src', `/files/profiles/${value.image}`)
+                                        conversationClone.find('h6').html(value.name)
+                                        conversationClone.find('.text-truncate:last').html(value.message)
+                                        conversationClone.find('p').html(value.created)
+                                        conversation.push(conversationClone)
+                                    });
+                                } else {
+                                    cease_fire = true
+                                }
+                                // console.log(conversation)
+                                $('#conversation-container').append(conversation)
+                            }
+                        });
+                    }
+                },
+                ceaseFire: function(i) {
+                    return cease_fire;
                 }
             })
 
@@ -155,7 +184,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
             });
         })
 
-        function formatOptionState (state) {
+        function formatOptionState(state) {
             if (!state.id) {
                 return state.text;
             }
@@ -166,7 +195,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
             return $state;
         };
 
-        function formatSelectionState (state) {
+        function formatSelectionState(state) {
             if (!state.id) {
                 return state.text;
             }
@@ -185,6 +214,9 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
     </script>
 </head>
 <body>
+    <?php 
+        $baseURL = '/files/profiles/';
+    ?>
     <div class="layout">
 
         <!-- Navbar -->
@@ -224,7 +256,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
                 <li class="nav-item mt-lg-8 d-none d-lg-block">
                     <a class="nav-link position-relative p-0 py-2" id="user" data-toggle="tab" href="#tab-content-user" title="User" role="tab">
                         <div class="avatar avatar-sm avatar-online mx-auto">
-                            <img class="avatar-img" src="/files/profiles/<?php echo AuthComponent::user('User')['image'] ?>" alt="">
+                            <img class="avatar-img" src="<?php echo $baseURL.AuthComponent::user('User')['image'] ?>" alt="">
                         </div>
                     </a>
                 </li>
@@ -293,7 +325,6 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
                                 <nav class="nav d-block list-discussions-js mb-n6" id="conversation-container">
                                     <!-- Chat link -->
                                     <?php 
-                                        $baseURL = '/files/profiles/';
                                         $conversations = $this->Session->read('conversations')['conversations'];
                                         if (empty($conversations)) {
                                             echo '<div class="text-center"><small>No Conversations yet!</small></div>';
@@ -313,7 +344,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
                                                     <div class="media-body overflow-hidden">
                                                         <div class="d-flex align-items-center mb-1">
                                                             <h6 class="text-truncate mb-0 mr-auto"><?php echo $conversation['Sender']['id'] == AuthComponent::user('User')['id'] ? $conversation['Receiver']['name'] : $conversation['Sender']['name'] ?></h6>
-                                                            <p class="small text-muted text-nowrap ml-4"><?php echo date_format(date_create($conversation['Message'][0]['created']), 'H:i A') ?></p>
+                                                            <p class="small text-muted text-nowrap ml-4"><?php echo date_format(date_create($conversation['Message'][0]['created']), 'h:i A') ?></p>
                                                         </div>
                                                         <div class="text-truncate"><?php echo $conversation['Message'][count($conversation['Message'])-1]['User']['id'] == AuthComponent::user('User')['id'] ? 'You' : explode(" ", $conversation['Message'][count($conversation['Message'])-1]['User']['name'])[0] ?> : <?php echo $conversation['Message'][count($conversation['Message'])-1]['message'] ?></div>
                                                     </div>
@@ -602,7 +633,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
                                                 <div class="media align-items-center">
                                                     <div class="media-body">
                                                         <p class="small text-muted mb-0">Last Login Time</p>
-                                                        <p><?php echo date_format(date_create(AuthComponent::user('User')['last_login_time']), 'H:i A') ?></p>
+                                                        <p><?php echo date_format(date_create(AuthComponent::user('User')['last_login_time']), 'h:i A') ?></p>
                                                     </div>
                                                     <i class="far fa-clock"></i>
                                                 </div>

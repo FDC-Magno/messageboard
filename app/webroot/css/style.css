@@ -45,3 +45,11 @@ form .error-message{
 .search{
     width: 100%;
 }
+
+.cake-debug{
+    color: #fff;
+}
+
+pre{
+    color: #fff;
+}

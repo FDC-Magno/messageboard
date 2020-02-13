@@ -29,5 +29,6 @@
 </p>
 
 <?php
+$this->layout = 'user';
 echo $this->element('exception_stack_trace');
 ?>
