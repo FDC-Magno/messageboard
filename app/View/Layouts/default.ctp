@@ -58,13 +58,17 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
         //get file before uploading to server
         function readURL(input) {
             if (input.files && input.files[0]) {
-                var reader = new FileReader();
-                
-                reader.onload = function(e) {
-                    $('#welcomeForm').find('img').attr('src', e.target.result);
+                let fileTypes = ['jpg', 'jpeg', 'png', 'gif'];
+                let extension = input.files[0].name.split('.').pop().toLowerCase(),
+                isSuccess = fileTypes.indexOf(extension) > -1;
+                let reader = new FileReader();
+
+                if (isSuccess) {     
+                    reader.onload = function(e) {
+                        $('#editProfileForm').find('img').attr('src', e.target.result);
+                    }
+                    reader.readAsDataURL(input.files[0]);
                 }
-                
-                reader.readAsDataURL(input.files[0]);
             }
         }
 
@@ -73,7 +77,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
             window.cease_fire = false;
 
             //change preview after an image is selected
-            $('#upload-chat-photo').change(function() {
+            $('.photo-input').change(function() {
                 readURL(this)
             })
             // FINISHED(Jann 02/12/2020): Limit endless scrolling if content is empty
@@ -174,6 +178,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
                     data: data,
                     dataType: "json",
                     success: function (response) {
+                        console.log(response)
                         if (response.status == 'ok') {
                             location.href = response.url
                         }else{
@@ -415,8 +420,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 
                                         <div id="profile-settings-account" class="collapse" data-parent="#profile-settings">
                                             <div class="card-body">
-                                                <!-- <form id='profile-form' enctype="multipart/form-data", charset="utf-8"> -->
-                                                <?php echo $this->Form->create(false, array( 'enctype' => 'multipart/form-data', 'url' => '/users/edit/'. AuthComponent::user('User')['id'])); ?>
+                                                <?php echo $this->Form->create(false, array( 'enctype' => 'multipart/form-data', 'id' => 'editProfileForm', 'url' => '/users/edit/'. AuthComponent::user('User')['id'])); ?>
                                                     <input type="hidden" name="id" id="profile-id" value="<?php echo AuthComponent::user('User')['id']; ?>">
                                                     <!-- Avatar -->
                                                     <div class="form-group">
@@ -429,7 +433,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
                                                                 <div class="media-body">
                                                                     <label class="btn btn-sm btn-primary mb-3">
                                                                         Upload photo
-                                                                        <input type="file" name="data[image]" id="upload-chat-photo" class="d-none" label=''>
+                                                                        <input type="file" name="data[image]" id="upload-chat-photo" class="d-none photo-input" label=''>
                                                                     </label>
                                                                     <p class="small text-muted">You can upload jpg, gif or png image files. Max file size 3mb.</p>
                                                                 </div>
@@ -467,7 +471,6 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
                                                         <textarea class="form-control" id="hubby" rows="3" name="hubby" placeholder="Express yourself" data-autosize="true"><?php echo AuthComponent::user('User')['hubby'] ?></textarea>
                                                     </div>
                                                     <?php echo $this->Form->end(array('label' => 'Save Preferences', 'class' => 'btn btn-primary btn-block')); ?>
-                                                    <!-- <button id="profile-edit-submit" class="btn btn-primary btn-block">Save Preferences</button>
                                                 </form> -->
                                             </div>
                                         </div><!-- .collapse -->

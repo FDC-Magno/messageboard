@@ -26,7 +26,8 @@ class MessagesController extends AppController {
 			$this->Message->create();
 			if ($this->Message->save($this->request->data)) {
 				$id = $this->Message->getLastInsertID();
-				$message = $this->Message->findById($id, array('recursive' => '0'));
+				$this->Message->recursive = 1;
+				$message = $this->Message->findById($id);
 				$this->response->type('application/json');
 				$this->response->body(json_encode($message));
 				return $this->response;

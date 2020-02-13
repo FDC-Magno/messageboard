@@ -24,8 +24,8 @@ class ConversationsController extends AppController {
 		//checks if conversation exist with the conversationId
 		$conversation = $this->readMessage($conversationId);
 		if (!empty($conversation)) {
-			// debug($conversation);
 			$this->set(compact('conversation'));
+			$this->updateUserConversations();
 		} else {
 			return $this->redirect(Router::url(array('controller' => 'users', 'action' => 'welcome')));
 		}
@@ -66,7 +66,8 @@ class ConversationsController extends AppController {
 			'sender_id' => $data['sender_id'],
 			'receiver_id' => $data['receiver_id']
 		);
-		$conversation = $this->Conversation->findByReceiverId($data['receiver_id']);
+		$conversation = $this->Conversation->findByReceiverIdAndSenderId($data['receiver_id'], $data['sender_id']);
+		Debugger::log($conversation);
 		if (empty($conversation)) {
 			if ($this->Conversation->save($conversationData)) {
 				$messageData = array(

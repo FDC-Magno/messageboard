@@ -278,15 +278,33 @@
 				// FINISHED(Jann 02/12/2020): clone existing conversation then append using jquery
 				$('#message').val("")
 				let content = $('#chat-container').find('.message-right:last').clone();
-				content.removeClass();
-				content.addClass(`message message-right message-${index}`)
-				content.find('.dropdown-item').attr('onclick', `deleteMessage(event, ${index}, ${response.Message.id})`)
-				content.find('p').html(`${response.Message.message.replace("\n", "<br />")}`)
-				content.find('small').html(`${created}`)
-				$('#chat-container').append(content);
-				content.hide()
-				content.fadeIn('1000')
-				$('.chat-content').scrollTop($('#chat-container')[0].scrollHeight);
+				if (content.length != 0) {	
+					content.removeClass();
+					content.addClass(`message message-right message-${index}`)
+					content.find('.dropdown-item').attr('onclick', `deleteMessage(event, ${response.Message.id})`)
+					content.find('p').html(`${response.Message.message.replace("\n", "<br />")}`)
+					content.find('small').html(`${created}`)
+					$('#chat-container').append(content);
+					content.hide()
+					content.fadeIn('1000')
+					$('.chat-content').scrollTop($('#chat-container')[0].scrollHeight);
+				} else {
+					let content = $('#chat-container').find('.message:last').clone();
+					content.addClass(`message-right message-${response.Message.id}`)
+					content.prepend('<div class="dropdown" id="dropdown-message-right"></div>')
+					content.find('.dropdown').append(`<a class='nav-link text-muted px-0' href='#' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'><i class='fas fa-ellipsis-v'</i></a>`)
+					content.find('.dropdown').append(`<div class='dropdown-menu'><a class='dropdown-item d-flex align-items-center' onclick='deleteMessage(event, ${response.Message.id})' href='#'>Delete<i class='far fa-trash-alt ml-auto'></i></a></div>`)
+					content.find('.dropdown-item').attr('onclick', `deleteMessage(event, ${response.Message.id})`)
+					content.find('.message-content').removeClass('bg-light')
+					content.find('.message-content').addClass('bg-primary text-white')
+					content.find('.avatar-img').attr('src', `/files/profiles/${response.User.image}`)
+					content.find('p').html(`${response.Message.message.replace("\n", "<br />")}`)
+					content.find('small').html(`${created}`)
+					$('#chat-container').append(content);
+					content.hide()
+					content.fadeIn('1000')
+					$('.chat-content').scrollTop($('#chat-container')[0].scrollHeight);
+				}
 			},
 			error: function(error, err){
 				console.log(error, err)
