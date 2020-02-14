@@ -471,7 +471,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
                                                         <textarea class="form-control" id="hubby" rows="3" name="hubby" placeholder="Express yourself" data-autosize="true"><?php echo AuthComponent::user('User')['hubby'] ?></textarea>
                                                     </div>
                                                     <?php echo $this->Form->end(array('label' => 'Save Preferences', 'class' => 'btn btn-primary btn-block')); ?>
-                                                </form> -->
+                                                </form>
                                             </div>
                                         </div><!-- .collapse -->
 

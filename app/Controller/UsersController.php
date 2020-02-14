@@ -4,12 +4,7 @@ App::uses('AppController', 'Controller');
  * Users Controller
  */
 class UsersController extends AppController {
-
-/**
- * Scaffold
- *
- * @var mixed
- */
+	
 	public $uses = array(
 		'User', 'Conversation'
 	);
@@ -63,11 +58,11 @@ class UsersController extends AppController {
 		$this->layout = 'user';
 		//check if there is already a logged in user
 		if ($this->Auth->login()) {
+			// redirect to home page if the user is already logged in
 			return $this->redirect($this->Auth->redirectUrl());
 		}
 		// check if request is post
 		if ($this->request->is('post')) {
-			// redirect to home page if the user is already logged in
 			// find a matching user with the request data
 			$user = $this->User->find('first', array(
 				'conditions' => array(
@@ -78,8 +73,7 @@ class UsersController extends AppController {
 			));
 			//log user in if user data is available
 			if ($user) {
-				if($this->Auth->login($user)){ 
-					$this->updateLoginFields();
+				if($this->Auth->login($this->updateLastLoginTime($user))){ 
 					$this->Flash->success(__('You have successfully logged in.'));
 					return $this->redirect(array('action' => 'welcome'));
 				}
@@ -90,14 +84,16 @@ class UsersController extends AppController {
 	}
 
 	//update last login time field when user logs in
-	protected function updateLoginFields() {
-        $this->User->id = $this->Auth->user('User')['id'];
+	protected function updateLastLoginTime($user) {
+        $this->User->id = $user['User']['id'];
         $this->User->read();
         $this->User->data['User']['last_login_time'] = date('Y-m-d H:i:s');
-        $this->User->save($this->User->data, false);
+		$updatedUser = $this->User->save($this->User->data, false);
+		
+		return $updatedUser;
 	}
 	
-	//FIXED(Jann 02/10/2020): Get sender data and receiver data from the current user's conversation
+	//FINISHED(Jann 02/10/2020): Get sender data and receiver data from the current user's conversation
 	public function welcome() {
 		$conversations = $this->Conversation->find('all', array(
 			'recursive' => '2', 
