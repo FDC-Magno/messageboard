@@ -27,18 +27,18 @@
  */
 	Router::connect('/', array('controller' => 'users', 'action' => 'welcome'));
 	Router::connect('/home', array('controller' => 'pages', 'action' => 'display', 'home'));
-	Router::connect('/users/:id/editPassword', array('controller' => 'users', 'action' => 'editPassword'));
+	Router::connect('/users/editPassword', array('controller' => 'users', 'action' => 'editPassword'));
 	Router::connect('/getConversations', array('controller' => 'conversations', 'action' => 'getConversations'));
 	Router::connect('/login', array('controller' => 'users', 'action' => 'login'));
 	Router::connect('/users/index/search?', array('controller' => 'users', 'action' => 'index'));
-	Router::connect('/chat/:id', array('controller' => 'conversations', 'action' => 'view'));
-	Router::connect('/chat/:id/add', array('controller' => 'messages', 'action' => 'add'));
+	Router::connect('/chat/:id', array('controller' => 'conversations', 'action' => 'view'), array('pass' => array('id')));
+	Router::connect('/messages/add', array('controller' => 'messages', 'action' => 'add'));
 	Router::connect('/logout', array('controller' => 'users', 'action' => 'logout'));
 	Router::connect('/signup', array('controller' => 'users', 'action' => 'signup'));
 	Router::connect('/welcome', array('controller' => 'users', 'action' => 'welcome'));
-	Router::connect('/conversations/:id/delete', array('controller' => 'conversations', 'action' => 'delete'));
-	Router::connect('/messages/:id/delete', array('controller' => 'messages', 'action' => 'delete'));
-	Router::connect('/:id/getMessages', array('controller' => 'messages', 'action' => 'getMessages'));
+	Router::connect('/conversations/:id/delete', array('controller' => 'conversations', 'action' => 'delete'), array('pass' => array('id')));
+	Router::connect('/messages/:id/delete', array('controller' => 'messages', 'action' => 'delete'), array('pass' => array('id')));
+	Router::connect('/:id/getMessages', array('controller' => 'messages', 'action' => 'getMessages'), array('pass' => array('id')));
 	Router::connect('/conversations/add', array('controller' => 'conversations', 'action' => 'add'));
 /**
  * ...and connect the rest of 'Pages' controller's URLs.

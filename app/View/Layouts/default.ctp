@@ -499,7 +499,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 
                                         <div id="profile-settings-security" class="collapse" data-parent="#profile-settings">
                                             <div class="card-body">
-                                                <?php echo $this->Form->create('false', array('url' => Router::url(array('controller' => 'users', 'action' => 'editPassword', 'id' => AuthComponent::user('User')['id'])))); ?>
+                                                <?php echo $this->Form->create('false', array('url' => Router::url(array('controller' => 'users', 'action' => 'editPassword')))); ?>
                                                     <div class="form-group">
                                                         <label class="small" for="current-password">Current Password</label>
                                                         <input name="current-password" id="current-password" type="password" class="form-control" placeholder="Current Password">

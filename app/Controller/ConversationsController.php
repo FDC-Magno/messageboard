@@ -11,24 +11,18 @@ class ConversationsController extends AppController {
  * @var mixed
  */
 
-	public function beforeFilter()
-	{
+	public function beforeFilter() {
 		parent::beforeFilter();
 		$this->Auth->allow();
 	}
 
 	//Getting messages when clicking a conversation and opening chat details
 	//FIXED(Jann 02/12/2020): redirect if conversation does not exist
-	public function view() {
-		$conversationId = $this->request->params['id'];
+	public function view($id = null) {
 		//checks if conversation exist with the conversationId
-		$conversation = $this->readMessage($conversationId);
-		if (!empty($conversation)) {
-			$this->set(compact('conversation'));
-			$this->updateUserConversations();
-		} else {
-			return $this->redirect(Router::url(array('controller' => 'users', 'action' => 'welcome')));
-		}
+		$conversation = $this->readMessage($id);
+		$this->set(compact('conversation'));
+		$this->updateUserConversations();
 	}
 	// FIXED(Jann 02/12/2020): duplicate conversations 
 	public function add() {
@@ -47,11 +41,10 @@ class ConversationsController extends AppController {
 	}
 
 	//delete conversation
-	public function delete() {
+	public function delete($id = null) {
 		$this->request->onlyAllow('ajax');
 		$this->autoRender = false;
 		if ($this->request->is(array('delete', 'post'))) {
-			$id = $this->request->params['id'];
 			if ($this->Conversation->delete($id)) {
 				$this->response->type('application/json');
 				$this->response->body(json_encode(array('status' => 'ok')));
@@ -87,7 +80,6 @@ class ConversationsController extends AppController {
 	//sets the datetime of the message that is red
 	public function readMessage($id) {
 		$conversation = $this->Message->find('all', array('recursive' => '2', 'conditions' => array('Message.conversation_id' => $id), 'limit' => 8, 'order' => array('Message.created' => 'DESC')));
-		// debug($conversation);
 		if (!empty($conversation)) {
 			$messages = array('otherUser' => array(), 'messages' => array(), 'conversation_id' => $id);
 			$date = date('Y-m-d H:i:s');
@@ -109,6 +101,7 @@ class ConversationsController extends AppController {
 					'user_id' => $message['Message']['user_id'],
 					'created' => date_format(date_create($message['Message']['created']), 'h:i A')
 				));
+				Debugger::log($this->Time);
 				if ($message['Message']['user_id'] != AuthComponent::user('User')['id'] && !$message['Message']['read']) {
 					$this->Message->id = $message['Message']['id'];
 					$this->Message->saveField('read', $date);

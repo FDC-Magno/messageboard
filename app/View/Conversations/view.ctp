@@ -263,11 +263,8 @@
 		// FINISHED(Jann 02/10/2020): Finish created time format
 		$.ajax({
 			type: "post",
-			accepts: {
-				json: 'application/json'
-			},
 			dataType: 'json',
-			url: `/chat/${id}/add`,
+			url: `/messages/add`,
 			data: data,
 			success: function (response) {
 				let date = new Date(response.Message.created)
@@ -280,7 +277,7 @@
 				let content = $('#chat-container').find('.message-right:last').clone();
 				if (content.length != 0) {	
 					content.removeClass();
-					content.addClass(`message message-right message-${index}`)
+					content.addClass(`message message-right message-${response.Message.id}`)
 					content.find('.dropdown-item').attr('onclick', `deleteMessage(event, ${response.Message.id})`)
 					content.find('p').html(`${response.Message.message.replace("\n", "<br />")}`)
 					content.find('small').html(`${created}`)

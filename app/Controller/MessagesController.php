@@ -20,6 +20,7 @@ class MessagesController extends AppController {
 
 	//Adding new messages on database
 	public function add() {
+		Debugger::log($this->request->data);
 		$this->autoRender = false;
 		$this->request->onlyAllow('ajax');
 		if ($this->request->is('post')) {
@@ -27,18 +28,16 @@ class MessagesController extends AppController {
 			if ($this->Message->save($this->request->data)) {
 				$id = $this->Message->getLastInsertID();
 				$this->Message->recursive = 1;
-				$message = $this->Message->findById($id);
-				$this->response->type('application/json');
-				$this->response->body(json_encode($message));
-				return $this->response;
+				$conversation = $this->Message->findById($id);
+				return json_encode($conversation);
 			}
 		}
 	}
 
-	public function delete() {
+	public function delete($id = null) {
 		$this->autoRender = false;
 		if ($this->request->is('delete')) {
-			if ($this->Message->delete($this->request->params['id'])) {
+			if ($this->Message->delete($id)) {
 				$message = array('status' => 'ok');
 				return json_encode($message);
 			}
@@ -46,7 +45,7 @@ class MessagesController extends AppController {
 	}
 
 	//get message data based on the selected conversation
-	public function getMessages() {
+	public function getMessages($id = null) {
 		$this->autoRender = false;
 
 		$messages = $this->Message->find('all', array(
@@ -57,16 +56,15 @@ class MessagesController extends AppController {
 				'Message.created' => 'DESC'
 			),
 			'conditions' => array(
-				'Message.conversation_id' => $this->request->params['id']
+				'Message.conversation_id' => $id
 			)
 		));
 
-		return json_encode($this->formatMessageData($messages, $this->request->params['id']));
+		return json_encode($this->formatMessageData($messages, $id));
 	}
 
 	//format message data
 	public function formatMessageData($conversation, $id) {
-		// debug($conversation);
 		if (!empty($conversation)) {
 			$messages = array('otherUser' => array(), 'messages' => array(), 'conversation_id' => $id);
 			$date = date('Y-m-d H:i:s');
