@@ -21,8 +21,13 @@ class ConversationsController extends AppController {
 	public function view($id = null) {
 		//checks if conversation exist with the conversationId
 		$conversation = $this->readMessage($id);
-		$this->set(compact('conversation'));
-		$this->updateUserConversations();
+		if ($conversation) {
+			$this->set(compact('conversation'));
+			$this->updateUserConversations();
+		}
+		else {
+			return $this->redirect('/');
+		}
 	}
 	// FIXED(Jann 02/12/2020): duplicate conversations 
 	public function add() {
