@@ -46,7 +46,7 @@
 									<a class="nav-link text-muted px-0" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 										<i class="fas fa-ellipsis-v"></i>
 									</a>
-									<div class="dropdown-menu" style="">
+									<div class="dropdown-menu">
 										<a class="dropdown-item d-flex align-items-center" id="deleteConversationBtn" href="#">
 											Delete
 											<i class="far fa-trash-alt ml-auto"></i>
