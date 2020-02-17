@@ -355,7 +355,6 @@ input[type=radio] {
 input[type=submit] {
 	display: inline;
 	font-size: 110%;
-	width: auto;
 }
 form .submit input[type=submit] {
 	background:#62af56;
