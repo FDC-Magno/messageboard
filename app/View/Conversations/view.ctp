@@ -164,9 +164,37 @@
 <?php $this->start('script'); ?>
 <script>
 	window.index = <?php echo $index; ?>;
+	window.conversationId = <?php echo $conversation['conversation_id'] ?>;
+	window.conversation_count = <?php echo count($conversation['messages']); ?>;
+	window.auth_user = {
+		id: "<?php echo AuthComponent::user('User')['id']; ?>",
+		name: "<?php echo AuthComponent::user('User')['name']; ?>",
+		image: "<?php echo AuthComponent::user('User')['image']; ?>"
+	};
+	window.messageTemplate = `<div class="message">
+								<!-- Avatar -->
+								<a class="avatar avatar-sm mr-4 mr-lg-5" href="#" data-chat-sidebar-toggle="#chat-1-user-profile">
+									<img class="avatar-img" src="">
+								</a>
+		
+								<div class="message-body">
+									<div class="message-content bg-light">
+										<p></p>
+									</div>
+		
+									<div class="message-footer">
+										<small class="text-muted"></small>
+									</div>
+								</div>
+							</div>`
+	
 	$(function() {
 		//open main chat when page loads
 		$('.main').addClass('main-visible')
+		
+		setInterval(() => {
+			updateChatbox(conversationId)
+		}, 5000);
 
 		//integrate infinite scrolling on chat messages
 		$('#chat-container2').endlessScroll({
@@ -181,11 +209,6 @@
 						offset: p * 8,
 					}
 					let id = <?php echo $conversation['conversation_id']; ?>;
-					let auth_user = {
-						id: "<?php echo AuthComponent::user('User')['id']; ?>",
-						name: "<?php echo AuthComponent::user('User')['name']; ?>",
-						image: "<?php echo AuthComponent::user('User')['image']; ?>"
-					};
 					$.ajax({
 						type: "get",
 						url: `/${id}/getMessages`,
@@ -193,12 +216,10 @@
 						dataType: "json",
 						success: function (response) {
 							// console.log(i, p, d)
-							console.log(response.messages)
 							let messages = []
 							if (response.messages != undefined) {
 									// console.log('test')
 								response.messages.forEach(function(value) {
-									let messageClone = $('#chat-container').find('.message:last').clone()
 									if (auth_user.id == value.user_id) {
 										messageClone.removeClass()
 										messageClone.addClass(`message message-right message-${value.id}`)
@@ -221,7 +242,7 @@
 								});
 								messages.reverse()
 							}else{
-								cease_fire = true
+								ceaseFire = true
 							}
 							// console.log(conversation)
 							$('#chat-container').prepend(messages)
@@ -230,7 +251,7 @@
 				}
 			},
 			ceaseFire: function(i) {
-				return cease_fire;
+				return ceaseFire;
 			}
 		})
 		//setting key enter to send message and ctrl+enter to enter newline
@@ -287,7 +308,7 @@
 					$('.chat-content').scrollTop($('#chat-container')[0].scrollHeight);
 				} else {
 					let content = $('#chat-container').find('.message:last').clone();
-					content.addClass(`message-right message-${response.Message.id}`)
+					content.addClass(`message message-right message-${response.Message.id}`)
 					content.prepend('<div class="dropdown" id="dropdown-message-right"></div>')
 					content.find('.dropdown').append(`<a class='nav-link text-muted px-0' href='#' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'><i class='fas fa-ellipsis-v'</i></a>`)
 					content.find('.dropdown').append(`<div class='dropdown-menu'><a class='dropdown-item d-flex align-items-center' onclick='deleteMessage(event, ${response.Message.id})' href='#'>Delete<i class='far fa-trash-alt ml-auto'></i></a></div>`)
@@ -313,6 +334,7 @@
 	function deleteConversation(id) { 
 		//initialize data object to send
 		//call ajax to delete route
+		
 		$.ajax({
 			type: "DELETE",
 			url: `/conversations/${id}/delete`,
@@ -349,6 +371,58 @@
 				if(response.status == 'ok'){
 					//animate message deletion on success use ($('#chat-container').find('div').eq(0).animate({ opacity: 0, height: 0 }, 300, 'linear')) for animation
 					$(`.message-${id}`).animate({ opacity: 0, height: 0 }, 300, 'linear', function(){ $(this).delay().remove() })
+				}
+			}
+		});
+	}
+	// FINISHED(Jann 02/17/2020): Implement realtime chat
+	function updateChatbox(conversationId) {
+		//get latest messages using the conversationId
+		$.ajax({
+			type: "GET",
+			url: `/messages/${conversationId}/getUpdatedMessages`,
+			dataType: "json",
+			success: function (response) {
+				if(response){
+					//checking if the number of messages from the database has increased to limit the times the function will update the chat box
+					if (response.messages.length != conversation_count) {
+						let messages = []
+						//templating messages for UI
+						response.messages.map(function(value){
+							//template messages for authenticated user
+							if (auth_user.id == value.user_id) {
+								let messageClone = $(messageTemplate).clone()
+								messageClone.addClass(`message message-right message-${value.id}`)
+								messageClone.prepend('<div class="dropdown" id="dropdown-message-right"></div>')
+								messageClone.find('.dropdown').append(`<a class='nav-link text-muted px-0' href='#' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'><i class='fas fa-ellipsis-v'</i></a>`)
+								messageClone.find('.dropdown').append(`<div class='dropdown-menu'><a class='dropdown-item d-flex align-items-center' onclick='deleteMessage(event, ${value.id})' href='#'>Delete<i class='far fa-trash-alt ml-auto'></i></a></div>`)
+								messageClone.find('.dropdown-item').attr('onclick', `deleteMessage(event, ${value.id})`)
+								messageClone.find('.message-content').removeClass('bg-light')
+								messageClone.find('.message-content').addClass('bg-primary text-white')
+								messageClone.find('.avatar-img').attr('src', `/files/profiles/${auth_user.image}`)
+								messageClone.find('p').html(`${value.message.replace("\n", "<br />")}`)
+								messageClone.find('small').html(`${value.created}`)
+								messages.push(messageClone)
+							} else {
+								//template for the user on the other end of the conversation
+								let messageClone = $(messageTemplate).clone()
+								messageClone.removeClass()
+								messageClone.addClass(`message message-${value.id}`)
+								messageClone.find('.message-content').removeClass('bg-primary text-white')
+								messageClone.find('.message-content').addClass('bg-light')
+								messageClone.find('.dropdown').remove()
+								messageClone.find('.avatar-img').attr('src', `/files/profiles/${response.otherUser.image}`)
+								messageClone.find('.message-content').find('p').html(value.message)
+								messageClone.find('.message-footer').find('small').html(value.created)
+								messages.push(messageClone)
+							}
+						})
+						//setting global variable conversation_count to the messages length of the response to let the function check the messages count again
+						conversation_count = response.messages.length
+						$('#chat-container').find('.message').remove()
+						$('#chat-container').append(messages);
+						$('.chat-content').scrollTop($('#chat-container')[0].scrollHeight);
+					}
 				}
 			}
 		});

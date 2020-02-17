@@ -74,7 +74,12 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
 
         $(function() {
             var timer = null;
-            window.cease_fire = false;
+            window.ceaseFire = false;
+            let passwordError = <?php echo isset($this->Session->read('Message')['flash'][0]['message']) ? $this->Session->read('Message')['flash'][0]['message'] == 'Current password does not match' : 'false'; ?>;
+            if (passwordError) {
+                $('#settings').tab('show')
+                $('.collapse').eq(1).collapse('show')
+            }
 
             //change preview after an image is selected
             $('.photo-input').change(function() {
@@ -111,7 +116,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
                                         conversation.push(conversationClone)
                                     });
                                 } else {
-                                    cease_fire = true
+                                    ceaseFire = true
                                 }
                                 // console.log(conversation)
                                 $('#conversation-container').append(conversation)
@@ -120,7 +125,7 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
                     }
                 },
                 ceaseFire: function(i) {
-                    return cease_fire;
+                    return ceaseFire;
                 }
             })
 
@@ -223,7 +228,6 @@ $cakeVersion = __d('cake_dev', 'CakePHP %s', Configure::version())
         $baseURL = '/files/profiles/';
     ?>
     <div class="layout">
-
         <!-- Navbar -->
         <div class="navigation navbar navbar-light py-lg-7">
 

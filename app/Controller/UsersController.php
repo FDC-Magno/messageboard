@@ -119,6 +119,8 @@ class UsersController extends AppController {
 					return $this->redirect('/');
 				}
 			}
+			$this->Flash->error('Current password does not match');
+			return $this->redirect('/'); 
 		}
 	}
 

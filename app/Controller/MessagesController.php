@@ -15,7 +15,7 @@ class MessagesController extends AppController {
 
 	public function beforeFilter() {
 		parent::beforeFilter();
-		$this->Auth->allow();
+		$this->Auth->allow('getUpdatedMessages');
 	}
 
 	//Adding new messages on database
@@ -44,6 +44,22 @@ class MessagesController extends AppController {
 		}
 	}
 
+	//return recent message on a certain conversation using the id
+	public function getUpdatedMessages($id = null) {
+		$this->autoRender = false;
+		//get all messages from database
+		$latestMessages = $this->Message->find('all', array(
+			'recursive' => '1',
+			'order' => array(
+				'Message.created' => 'ASC'
+			),
+			'conditions' => array(
+				'Message.conversation_id' => $id,
+			)
+		));
+		return json_encode($this->formatMessageData($latestMessages));
+	}
+
 	//get message data based on the selected conversation
 	public function getMessages($id = null) {
 		$this->autoRender = false;
@@ -60,13 +76,13 @@ class MessagesController extends AppController {
 			)
 		));
 
-		return json_encode($this->formatMessageData($messages, $id));
+		return json_encode($this->formatMessageData($messages));
 	}
 
 	//format message data
-	public function formatMessageData($conversation, $id) {
+	public function formatMessageData($conversation) {
 		if (!empty($conversation)) {
-			$messages = array('otherUser' => array(), 'messages' => array(), 'conversation_id' => $id);
+			$messages = array('otherUser' => array(), 'messages' => array(), 'conversation_id' => $conversation[0]['Message']['conversation_id'], 'messages_count' => count($conversation));
 			$date = date('Y-m-d H:i:s');
 			//get the other user data on the conversation
 			foreach ($conversation as $key => $message) {

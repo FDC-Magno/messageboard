@@ -33,6 +33,7 @@
 	Router::connect('/users/index/search?', array('controller' => 'users', 'action' => 'index'));
 	Router::connect('/chat/:id', array('controller' => 'conversations', 'action' => 'view'), array('pass' => array('id')));
 	Router::connect('/messages/add', array('controller' => 'messages', 'action' => 'add'));
+	Router::connect('/messages/:id/getUpdatedMessages', array('controller' => 'messages', 'action' => 'getUpdatedMessages'), array('pass' => array('id')));
 	Router::connect('/logout', array('controller' => 'users', 'action' => 'logout'));
 	Router::connect('/signup', array('controller' => 'users', 'action' => 'signup'));
 	Router::connect('/welcome', array('controller' => 'users', 'action' => 'welcome'));
